@@ -102,8 +102,10 @@ export class WindowBaseDOM {
         actions.id = `${this.P}r-left-block`
 
 
-        const ACTIONS =
-            `<div class="r-act" id="${this.P}actions">
+        const ACTIONS =`
+            <div class="r-box-show" id="${this.P}r-box-show">
+            </div>
+            <div class="r-act" id="${this.P}actions">
                 <div class="r-act-opt r-head" id="${this.P}w-title">
                     <button id="${this.P}${constIdBaseWindow.NEW}" class="r-a-b r-btn-new-cancel-close r-desktop-web"><i class="bi bi-plus-lg"></i></button>
                     <button id="${this.P}${constIdBaseWindow.CLOSE_GRID}" class="r-a-b r-btn-new-cancel-close r-mobile"><i class="bi bi-x-lg"></i></button>
@@ -199,8 +201,6 @@ export class WindowBaseDOM {
                 ${type == 'crud' ? this.bodyForm() : '' }
             </div>
             <div class="r-facede-action bottom">
-            </div>
-            <div class="r-box-show" id="${this.P}r-box-show">
             </div>
         </div>
         `
