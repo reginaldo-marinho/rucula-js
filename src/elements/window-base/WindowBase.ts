@@ -73,14 +73,29 @@ export class WindowBaseDOM {
     }
     private openCloseForm(){
 
-        let rNew = this.ruculaWindow.querySelector(`#${this.P}${constIdBaseWindow.NEW}`)
+        let rNew = this.ruculaWindow.querySelector(`#${this.P}${constIdBaseWindow.NEW}`)!
         let itemContainer = document.querySelectorAll(`.${this.P}js-open-close-container`)
         
-        rNew?.addEventListener("click", () => {
+        rNew.addEventListener("click", () => {
 
             itemContainer.forEach(item => {
                 item.classList.toggle("r-display-none")
+                indicateBoxFrameOpend(rNew!, item!)
             })
+
+            function indicateBoxFrameOpend(rNew:Element, item:Element){
+
+                var isBoxFrame = item.classList.contains("box-frame")
+                var isBoxFrameOpened = item.classList.contains("r-display-none")
+
+                if(isBoxFrame && isBoxFrameOpened == false){
+                    rNew.classList.add("r-box-frame-opened")
+                }
+
+                if(isBoxFrame && isBoxFrameOpened){
+                    rNew.classList.remove("r-box-frame-opened")
+                }
+            }
         })
 
         let rCloseGrid = this.ruculaWindow.querySelector(`#${this.P}${constIdBaseWindow.CLOSE_GRID}`)
