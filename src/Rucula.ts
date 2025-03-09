@@ -287,11 +287,11 @@ export class Rucula{
         if(disabled){
             input.removeAttribute(ATTR_DISABLED)
         }
-        let onChange = input.value != value && input.getAttribute('type') === 'checkbox'
-
         input.focus({preventScroll: true}) //! This command forces the objectmanagment and tableDependecy processes to run
-        
+        let onChange = input.value != value && input.getAttribute('type') === 'checkbox'
         input.value = value
+        
+        input.blur() //! This command forces the objectmanagment and tableDependecy processes to run
         
         if(onChange){
             input.dispatchEvent(this.eventRuculaChange)

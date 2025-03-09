@@ -14,10 +14,8 @@ export class FileEventCommon extends FileEvent{
             }
             
             this.dispatchEvent(constPrefixEventField.BEFORE);
-            
             this.set()
             
-           
         })
 
         this.input.addEventListener('input',() => {
@@ -28,7 +26,9 @@ export class FileEventCommon extends FileEvent{
         this.input.addEventListener('focusout',() => {            
             this.dispatchEvent(constPrefixEventField.AFTER);
             this.set()
+        })
 
+        this.input.addEventListener('blur',() => {            
             if(this.field.mask  && this.input.value){
                 this.input.value = maskInput(this.input.value,this.field.mask)
             }
