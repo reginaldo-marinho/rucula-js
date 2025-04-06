@@ -52,11 +52,10 @@ export class URLRucula{
         return url
     }
 
-    domain(env:string = ''){
+    domain(){
 
         // Todo - Prestar suporte para obtenção de ambiente
 
-        ruculaGlobal.getEnvironment()
         let enviroment = ruculaGlobal.getEnvironment();
 
         if(enviroment.port){    
