@@ -18,6 +18,8 @@ export interface field {
     radio?: string[];
     value?: string;
     button?: button;
+    mask?: string;
+    regex?: string;
 }
 interface checkbox {
     on: string;

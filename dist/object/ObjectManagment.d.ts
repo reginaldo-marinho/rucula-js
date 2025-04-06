@@ -5,7 +5,7 @@ import { entityConfiguration, fragmentField } from './ObjectAliases';
 export declare class ManagmentObject {
     fragment: Fragment;
     tableDependency: TableDependency;
-    constructor(fragment: Fragment, tableDependency: TableDependency);
+    constructor(fragment: Fragment, tableDependency: TableDependency, frames: frame[]);
     pathObjectBase: {
         parent: string;
         alias: string;
@@ -15,12 +15,12 @@ export declare class ManagmentObject {
      * @description Creates an array of fragments of type object
      * @param {frame[]} frames
      */
-    initObjects(frames: frame[]): void;
+    private initObjects;
     /**
     * @description Creates an array of fragments of type Field for Frames of type 'block'
     * @param {frame} frame
     */
-    configFieldBlock(frame: frame): void;
+    private configFieldBlock;
     /**
      * @description Creates an array of fragments of type Field for Frames of type 'line', This function must be called every time a new line is created on the screen
      * @param {frame} frame

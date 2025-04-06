@@ -7,6 +7,7 @@ type fragmentObject = {
         objectDto: string;
         identity: string;
         object: any;
+        objectSnapshot?: any;
         getValueInObjectFragment: any;
     };
 };
@@ -21,6 +22,7 @@ type fragmentField = {
         propertDto: string;
         line: number | undefined;
         dependency: string;
+        dependencySnapshot?: string;
     };
 };
 type entityConfiguration = {

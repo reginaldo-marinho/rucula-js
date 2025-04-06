@@ -4,6 +4,8 @@ type dependency = {
     identityObject: string;
     isHibernate: boolean;
     fieldsNotResolved: string[];
+    isHibernateSnapshot?: boolean;
+    fieldsNotResolvedSnapshot?: string[];
 };
 export declare class TableDependency {
     private dependencyesNotResolved;
@@ -11,6 +13,7 @@ export declare class TableDependency {
     private MAX_LENGHT;
     private MAX;
     private MIN;
+    private REGEX;
     moveImbernateToNotResolved(identityObject: string): void;
     moveNotResolvedToImbernate(identityObject: string): void;
     createExpectedDependency(field: field, fragmentField: fragmentField): string;
@@ -21,6 +24,7 @@ export declare class TableDependency {
     consistMaxLen(dependencyExpected: string, value: string | number | boolean): boolean;
     consistMax(dependencyExpected: string, value: string | number): boolean;
     consistMin(dependencyExpected: string, value: string | number): boolean;
+    consistRegex(dependencyExpected: string, value: string | number): boolean;
     addValueDefault(): {
         typeString: (value: any) => any;
         typeNumber: (value: any) => any;
@@ -28,5 +32,7 @@ export declare class TableDependency {
     removeExpectedDependency(identity: string): void;
     getDependenciesNotResolded(): dependency[];
     dependenciesCount(): number;
+    snapshot(): void;
+    revertToInit(): void;
 }
 export {};

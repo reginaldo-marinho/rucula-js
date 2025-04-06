@@ -24,7 +24,7 @@ export declare class Popup {
     boxShowAppendChield(element: HTMLElement): void;
     messageElement(config: config): HTMLDivElement;
     closeTimeout(div: HTMLElement, timeout: number, callback?: callbackYesNo): void;
-    closeOKOrCancel(callback: any, div: HTMLElement): void;
+    closeOKOrCancel(callback: any, div: HTMLElement, callbackInTimeout?: boolean): void;
     close(): void;
     info(config: configCommon, callback?: callbackYesNo): void;
     sucess(config: configCommon, callback?: callbackYesNo): void;

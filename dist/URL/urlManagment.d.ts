@@ -1,15 +1,12 @@
+import { buttonURL } from "../entities/form/button";
 import { ManagmentObject } from "../object/ObjectManagment";
 export declare class URLRucula {
     private _URL?;
-    private managmentObject;
-    constructor(managmentObject: ManagmentObject, URL?: {
-        absolute: string;
-        relative: string;
-        params: string;
-    });
+    private managmentObject?;
+    constructor(managmentObject?: ManagmentObject, URL?: buttonURL);
     getURL(): string;
-    domain(env?: string): string;
-    path(path: string): string;
+    domain(): string;
+    private path;
     private createWithParams;
     private createWithoutParams;
 }

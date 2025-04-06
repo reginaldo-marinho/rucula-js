@@ -1,7 +1,7 @@
-import { WindowBaseDOM } from "../elements/window-base/WindowBase";
 export declare class PaginationEvents {
-    windowBaseDOM: WindowBaseDOM;
-    constructor(windowBaseDOM: WindowBaseDOM);
+    private globalWindow;
+    private p;
+    constructor(p: string, globalWindow: HTMLElement);
     headerSearch(gridSearch: boolean): void;
     fotter(gridFooter: boolean): void;
 }

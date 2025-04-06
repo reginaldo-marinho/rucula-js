@@ -1,9 +1,9 @@
-import { WindowBaseDOM } from "../elements/window-base/WindowBase";
 import { ManagmentObject } from "../object/ObjectManagment";
 export declare class EventManagment {
     private managmentObject;
-    private windowBaseDOM;
-    constructor(managmentObject: ManagmentObject, windowBaseDOM: WindowBaseDOM);
+    private p;
+    private elementRoot;
+    constructor(p: string, managmentObject: ManagmentObject, elementRoot: HTMLElement);
     getFieldDetails(event: CustomEvent): {
         identity: string;
         name: any;

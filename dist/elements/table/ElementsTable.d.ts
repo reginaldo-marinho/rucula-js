@@ -2,6 +2,7 @@ import { frame } from "../../entities/form/frame";
 import { ManagmentObject } from "../../object/ObjectManagment";
 import { Field } from "../form/Field";
 import { FieldMenuContext } from "../form/Field/fieldMenuContext";
+import { typeInputSnapshot } from "../frame/FrameElement";
 import { FrameElementLine } from "../frame/FrameElementLine";
 import { FrameEvent } from "../frame/FrameEvent";
 export declare class FameLineTable {
@@ -15,7 +16,7 @@ export declare class FameLineTable {
     constructor(managmentObject: ManagmentObject, field: Field, frameElementLine: FrameElementLine, frameEvent: FrameEvent, callbackSetValuesDefined: any, fieldMenuContext: FieldMenuContext, P: string);
     getCellActions(tr: HTMLTableRowElement): HTMLTableCellElement;
     createHeader(frame: frame): HTMLTableSectionElement;
-    createRowDetail(frame: frame): HTMLTableRowElement;
+    createRowDetail(frame: frame, inputSnapshot?: typeInputSnapshot[]): HTMLTableRowElement;
     createNewRowDetail(identityObject: string): HTMLTableRowElement;
     deleteRowDetail(currentLineElement: HTMLTableRowElement, inputTargetEvent: HTMLInputElement): void;
 }

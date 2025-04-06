@@ -53,10 +53,12 @@ const constTypeFrame = {
 };
 const constIdBaseWindow = {
     NEW: "r-a-new",
+    CLOSE_GRID: "close-grid",
     RELOAD: "r-a-reload",
     ERASE_WINDOW: "erase-window",
     ALTER_THEME: "alter-theme",
     MAXIMIZE_WINDOW: "maximize-window",
+    MAXIMIZE_GRID: "maximize-grid",
     ACTIONS_WINDOW: "r-actiond-window",
     GLOBALIZATION: "r-globalization",
     OLLI_GLOBALIZATION: "r-globalization-list",
@@ -65,6 +67,7 @@ const constIdBaseWindow = {
     FORM_RUCULA_JS: "form-rucula-js",
     BUTTONS_MENU_VERTICAL: "r-a-menu-vertical",
     BUTTONS_MENU_VERTICAL_MOBILE: "r-a-menu-vertical-mobile",
+    BUTTON_MENU_VERTICAL_MOBILE_CLOSE: "r-a-mobile-close",
     BUTTONS_MENU_VERTICAL_LIST: "r-a-menu-vertical-list",
     TITLE: "r-window-title",
     FAVORITE: "r-favorite",
@@ -104,51 +107,89 @@ const constPagination = {
 };
 
 class WindowBaseDOM {
-    fieldMenuContext;
-    menuContext;
     P;
-    constructor(fieldMenuContext, menuContext, prefix) {
-        this.fieldMenuContext = fieldMenuContext;
-        this.menuContext = menuContext;
+    ruculaWindow = document.createElement("div");
+    globalWindow;
+    constructor(prefix, config) {
         this.P = prefix;
+        this.globalWindow = config.globalWindow;
+        if (config.type === 'header') {
+            config.openLeftGrid = false;
+        }
+        this.create(config);
     }
-    elementRoot;
-    createWindowBase(id) {
-        const ruculaWindow = document.createElement("div");
-        ruculaWindow.classList.add("r-w");
-        ruculaWindow.classList.add(`${this.P}r-w`);
-        const actions = this.componentActions();
-        ruculaWindow.appendChild(actions);
-        const contentForm = this.createComponentCreateOrEdit();
-        ruculaWindow.appendChild(contentForm.childNodes[0]);
-        ruculaWindow.appendChild(contentForm.childNodes[1]);
-        const div = document.getElementById(id);
-        div?.appendChild(ruculaWindow);
-        calculateHeightRuculaWindow();
-        this.prepareEventsButtonsCrud();
-        this.maximizeWindow();
-        this.eraseWindow(ruculaWindow);
+    create(config) {
+        this.cleanGlobalWindow();
+        this.ruculaWindow.classList.add("r-w");
+        this.ruculaWindow.classList.add(`${this.P}r-w`);
+        const actions = this.leftGrid();
+        this.ruculaWindow.appendChild(actions);
+        config.globalWindow?.appendChild(this.ruculaWindow);
+        this.createMold(config.type);
         this.alterTheme();
+        this.eraseForm();
         this.openActionswindow();
         this.actionCrudpreventDefault();
-        this.menuContext.init();
-        this.fieldMenuContext.init();
-        function calculateHeightRuculaWindow() {
-            let offsetTop = Number(ruculaWindow.offsetTop);
-            let height = Number(window.innerHeight);
-            ruculaWindow.style.height = `${height - offsetTop}px`;
-        }
+        this.widthAndHeigth();
+        this.maximizeForm();
+        this.openCloseForm();
+        this.closeLeftGrid(config.openLeftGrid);
+        this.createNameWindow(config.windowName);
+    }
+    widthAndHeigth() {
+        let offsetTop = Number(this.ruculaWindow.offsetTop);
+        let height = Number(window.innerHeight);
+        this.ruculaWindow.style.height = `${height - offsetTop}px`;
     }
     createNameWindow(name) {
-        let window = document.querySelector(".r-w-t");
-        window.innerHTML = name;
+        let window = this.ruculaWindow.querySelector(".r-w-t");
+        if (window) {
+            window.innerHTML = name;
+        }
     }
-    componentActions() {
+    cleanGlobalWindow() {
+        for (let index = 0; index < this.globalWindow.childNodes.length; index++) {
+            this.globalWindow.childNodes[index].remove();
+        }
+    }
+    openCloseForm() {
+        let rNew = this.ruculaWindow.querySelector(`#${this.P}${constIdBaseWindow.NEW}`);
+        let itemContainer = document.querySelectorAll(`.${this.P}js-open-close-container`);
+        rNew.addEventListener("click", () => {
+            itemContainer.forEach(item => {
+                item.classList.toggle("r-display-none");
+                indicateBoxFrameOpend(rNew, item);
+            });
+            function indicateBoxFrameOpend(rNew, item) {
+                var isBoxFrame = item.classList.contains("box-frame");
+                var isBoxFrameOpened = item.classList.contains("r-display-none");
+                if (isBoxFrame && isBoxFrameOpened == false) {
+                    rNew.classList.add("r-box-frame-opened");
+                }
+                if (isBoxFrame && isBoxFrameOpened) {
+                    rNew.classList.remove("r-box-frame-opened");
+                }
+            }
+        });
+        let rCloseGrid = this.ruculaWindow.querySelector(`#${this.P}${constIdBaseWindow.CLOSE_GRID}`);
+        rCloseGrid?.addEventListener("click", () => {
+            let div = document.querySelector(`.${this.P}r-f`);
+            div.classList.toggle('r-mobile');
+            let leftGrid = document.getElementById(`${this.P}r-left-block`);
+            leftGrid.classList.toggle('r-display-block');
+        });
+    }
+    leftGrid() {
         const actions = document.createElement("div");
         actions.className = "r-left-block";
-        const ACTIONS = `<div class="r-act" id="${this.P}actions">
+        actions.id = `${this.P}r-left-block`;
+        const ACTIONS = `
+            <div class="r-box-show" id="${this.P}r-box-show">
+            </div>
+            <div class="r-act" id="${this.P}actions">
                 <div class="r-act-opt r-head" id="${this.P}w-title">
-                    <button id="${this.P}${constIdBaseWindow.NEW}" class="r-a-b r-btn-new-cancel-close"><i class="bi bi-plus-lg"></i></button>
+                    <button id="${this.P}${constIdBaseWindow.NEW}" class="r-a-b r-btn-new-cancel-close r-desktop-web"><i class="bi bi-plus-lg"></i></button>
+                    <button id="${this.P}${constIdBaseWindow.CLOSE_GRID}" class="r-a-b r-btn-new-cancel-close r-mobile"><i class="bi bi-x-lg"></i></button>
                     <div class="r-w-t">
                     </div>
                     <button id="${this.P}r-a-many" class="r-a-b"><i class="bi bi-list"></i></button>
@@ -183,9 +224,10 @@ class WindowBaseDOM {
         actions.innerHTML = ACTIONS;
         return actions.cloneNode(true);
     }
-    createComponentCreateOrEdit() {
+    createMold(type) {
+        type ??= 'crud';
         const contentForm = document.createElement("div");
-        const CREATE_OR_EDIT = `<div class="container-r-f  ${this.P}js-open-close-container">
+        const CREATE_OR_EDIT = `<div class="container-r-f  box-home ${this.P}js-open-close-container">
             <div class="r-act-opt r-head" id="${this.P}w-title">
             </div>
             <div class="r-f-items r-f-home">
@@ -195,37 +237,34 @@ class WindowBaseDOM {
                 <h3 id="${this.P}r-f-home-title"></h3>
             </div>
         </div>
-        <div autocomplete="off" class="${this.P}r-f container-r-f r-display-none ${this.P}js-open-close-container">
-           
+        <div class="${this.P}r-f container-r-f box-frame r-display-none ${this.P}js-open-close-container">
+
         <div class="r-facede-action top">
-            <div class="r-window-name r-facede-action top">
-                <h3 class="${constIdBaseWindow.TITLE}"></h3>
-            </div>
             <div class="r-head r-read-new r-facede-action top">
-               
+
                 <div style="z-index: 10;">
                     <button id="${this.P}${constIdBaseWindow.ACTIONS_WINDOW}" class="r-a-b r-actions-window"><i class="bi bi-nut"></i></button>
                     <div class="r-display-inline-block r-actions-window r-actions-window-itens">
                         <div class="r-display-inline-block">
-                            <button id="${this.P}${constIdBaseWindow.MAXIMIZE_WINDOW}" class="r-a-b"><i class="bi bi-arrows"></i></button>
+                            <button id="${this.P}${constIdBaseWindow.MAXIMIZE_WINDOW}" class="r-a-b open-box-frame"><i class="bi bi-arrows"></i></button>
+                            <button id="${this.P}${constIdBaseWindow.MAXIMIZE_GRID}" class="r-a-b open-grid r-mobile"><i class="bi bi-grid-3x3-gap-fill"></i></button>
                             <button id="${this.P}${constIdBaseWindow.ALTER_THEME}" class="r-a-b "><i class="bi bi-circle-half"></i></button>
                         </div>
                         <div class="actions-view">
                             <button id="${this.P}${constIdBaseWindow.GLOBALIZATION}" class="r-a-b">
                                 <i class="bi bi-globe-americas"></i>
                                 <ol id="${this.P}${constIdBaseWindow.OLLI_GLOBALIZATION}" class="${constIdBaseWindow.OLLI_GLOBALIZATION} list-vertical-buttons list-vertical-buttons-pp-left r-display-none">
-                                </ol>                        
-                            </button> 
+                                </ol>
+                            </button>
                             <button id="${this.P}${constIdBaseWindow.ENVIROMENT}" class="r-a-b">
                                 <div class="desc-environment"><i class="bi bi-fire"></i> <span class="description"></span> </div>
                                 <ol id="${this.P}${constIdBaseWindow.OLLI_ENVIROMENT}" class="${constIdBaseWindow.OLLI_ENVIROMENT} list-vertical-buttons list-vertical-buttons-pp-left r-display-none">
-                                </ol>                        
-                            </button>    
+                                </ol>
+                            </button>
                         </div>
                     </div>
                 </div>
                  <div class="r-display-inline-block">
-                        <button id="${this.P}${constIdBaseWindow.FAVORITE}" class="r-a-b"><i class="bi bi-star-fill"></i></button>
                         <button id="${this.P}${constIdBaseWindow.CHAT}" class="r-a-b"><i class="bi bi-chat-dots"></i></button>
                         <button id="${this.P}${constIdBaseWindow.USER}" class="r-a-b"><i class="bi bi-person-circle"></i></button>
                     </div>
@@ -233,85 +272,74 @@ class WindowBaseDOM {
             </div>
 
             <div class="r-w-body">
-                <form class="r-window-work" autocomplete="off">
+                ${type == 'crud' ? this.bodyForm() : ''}
+            </div>
+            <div class="r-facede-action bottom">
+            </div>
+        </div>
+        `;
+        contentForm.innerHTML = CREATE_OR_EDIT;
+        this.ruculaWindow.appendChild(contentForm.childNodes[0]);
+        this.ruculaWindow.appendChild(contentForm.childNodes[1]);
+    }
+    bodyForm() {
+        return `<form class="r-window-work" autocomplete="off">
                     <div class="r-head r-read-edit r-facede-action-crud" id="${this.P}r-facede-action-crud">
-                        <h3 id="${this.P}${constIdBaseWindow.FRAME_INFO}">                        
-                        </h3>                        
-                        <div>                        
-                            <button id="${this.P}r-a-save" class="r-a-b "><i class="bi bi-box-arrow-in-down"></i></button>
-                            <button id="${this.P}r-a-alter" class="r-a-b"><i class="bi bi-pen"></i></button>
-                            <button id="${this.P}r-a-delete" class="r-a-b"><i class="bi bi-trash"></i></button>    
-                            <button id="${this.P}r-a-reload" class="r-a-b "><i class="bi bi-arrow-repeat"></i></button>
-                            <button id="${this.P}erase-window" class="r-a-b "><i class="bi bi-eraser"></i></button>
-                            <button id="${this.P}r-a-menu-vertical" class="r-a-b"><i class="bi bi-arrows"></i></button>    
+                        <h3 id="${this.P}${constIdBaseWindow.FRAME_INFO}">
+                        </h3>
+                        <div id="${this.P}action-crud">
+                            <button id="${this.P}r-a-save" class="r-a-b r-a-b-disable managed"><i class="bi bi-box-arrow-in-down"></i></button>
+                            <button id="${this.P}r-a-alter" class="r-a-b r-a-b-disable managed"><i class="bi bi-pen"></i></button>
+                            <button id="${this.P}r-a-delete" class="r-a-b r-a-b-disable managed"><i class="bi bi-trash"></i></button>
+                            <button id="${this.P}r-a-reload" class="r-a-b r-a-b-disable"><i class="bi bi-arrow-repeat"></i></button>
+                            <button id="${this.P}erase-window" class="r-a-b"><i class="bi bi-eraser"></i></button>
+                            <button id="${this.P}r-a-menu-vertical" class="r-a-b r-desktop-web"><i class="bi bi-arrows"></i></button>
+                            <button id="${this.P}r-a-menu-vertical-mobile" class="r-a-b r-mobile"><i class="bi bi-arrows"></i></button>
                         </div>
                     </div>
                     <div class="r-f-work r-f-items" id="${this.P}${constIdBaseWindow.FORM_RUCULA_JS}">
                     </div>
                 </form>
-                <div class="r-vertical-actions ${this.P}r-vertical-actions">
-                    <ol id=${this.P}${constIdBaseWindow.BUTTONS_MENU_VERTICAL_LIST} class=""> 
+                <div class="r-vertical-actions">
+                    <ol id=${this.P}${constIdBaseWindow.BUTTONS_MENU_VERTICAL_LIST} class="">
+                        <li class="r-display-none r-mobile" id="${this.P}${constIdBaseWindow.BUTTON_MENU_VERTICAL_MOBILE_CLOSE}">
+                            <button class="r-b-i" type="button"><i class="bi bi-x-lg"> </i></button>
+                        </li>
                     </ol>
-                    <button id=${this.P}${constIdBaseWindow.BUTTONS_MENU_VERTICAL_MOBILE} class="r-a-b actions-mobile"><i class="bi bi-arrows"></i></button>    
-                </div>
-            </div>
-            <div class="r-facede-action bottom">
-            </div>
-            <div class="r-box-show" id="${this.P}r-box-show"> 
-            </div>
-        </div>
-        `;
-        contentForm.innerHTML = CREATE_OR_EDIT;
-        return contentForm.cloneNode(true);
-    }
-    prepareEventsButtonsCrud() {
-        let rNew = document.getElementById(`${this.P}${constIdBaseWindow.NEW}`);
-        let framesOn = cookie.read("frames-on");
-        if (framesOn != "false") {
-            openClose();
-        }
-        rNew.addEventListener("click", () => {
-            let value = cookie.read("frames-on") == "true";
-            document.cookie = `frames-on=${!value}`;
-            this.openCloseContainer();
-            openClose();
-        });
-        function openClose() {
-            rNew.classList.toggle("r-btn-new-convert-close");
-            rNew.classList.toggle("r-btn-new-cancel-close");
-        }
-    }
-    openCloseContainer() {
-        let itemContainer = document.querySelectorAll(`.${this.P}js-open-close-container`);
-        itemContainer.forEach(item => {
-            item.classList.toggle("r-display-none");
-        });
+                </div>`;
     }
     closeLeftGrid(grid) {
         if (grid == false) {
-            let rf = document.querySelector(`.${this.P}r-f.r-display-none`);
+            let rf = this.globalWindow.querySelector(`.${this.P}r-f.r-display-none`);
             if (rf != null) {
-                let buttonNew = document.getElementById(`${this.P}${constIdBaseWindow.NEW}`);
-                buttonNew?.click();
+                let buttonNew = this.globalWindow.querySelector(`#${this.P}${constIdBaseWindow.NEW}`);
+                buttonNew.click();
             }
-            let actions = document.getElementById(`${this.P}actions`);
+            let actions = this.globalWindow.querySelector(`#${this.P}actions`);
             actions?.remove();
-            let maximizeWindow = document.getElementById(`${this.P}${constIdBaseWindow.MAXIMIZE_WINDOW}`);
+            let maximizeWindow = this.globalWindow.querySelector(`#${this.P}${constIdBaseWindow.MAXIMIZE_WINDOW}`);
             maximizeWindow?.remove();
         }
     }
-    maximizeWindow() {
-        let maximize = document.getElementById(`${this.P}${constIdBaseWindow.MAXIMIZE_WINDOW}`);
-        maximize?.addEventListener('click', () => {
-            let actions = document.getElementById("actions");
+    maximizeForm() {
+        let buttonMaximizeWindow = document.getElementById(`${this.P}${constIdBaseWindow.MAXIMIZE_WINDOW}`);
+        buttonMaximizeWindow?.addEventListener('click', () => {
+            let actions = document.getElementById(`${this.P}actions`);
             actions?.classList.toggle("r-close-grid");
         });
+        let buttonMaximizeGrid = document.getElementById(`${this.P}${constIdBaseWindow.MAXIMIZE_GRID}`);
+        buttonMaximizeGrid?.addEventListener('click', () => {
+            let actions = document.getElementById(`${this.P}r-left-block`);
+            actions?.classList.toggle("r-display-block");
+            let formFrames = document.querySelector(`.${this.P}r-f`);
+            formFrames.classList.toggle("r-mobile");
+        });
     }
-    eraseWindow(ruculaWindow) {
-        let erase = document.getElementById(`${this.P}${constIdBaseWindow.ERASE_WINDOW}`);
-        let form = ruculaWindow.querySelector('form.r-window-work');
-        erase?.addEventListener('click', () => {
-            form?.reset();
+    eraseForm() {
+        const eraseWindow = `${this.P}${constIdBaseWindow.ERASE_WINDOW}`;
+        let evt = new Event(eraseWindow);
+        document.getElementById(eraseWindow)?.addEventListener('click', () => {
+            this.globalWindow.dispatchEvent(evt);
         });
     }
     actionCrudpreventDefault() {
@@ -342,12 +370,6 @@ class WindowBaseDOM {
             }
         });
     }
-    setElementRoot(id) {
-        this.elementRoot = document.getElementById(id);
-    }
-    getElementRoot() {
-        return this.elementRoot;
-    }
     getPrincipalElementRucula() {
         return document.getElementById(`${this.P}${constIdBaseWindow.FORM_RUCULA_JS}`);
     }
@@ -362,6 +384,7 @@ let ruculaGlobal = (() => {
     }
     function checkEnvironments(environments) {
         if (environments.length == 0) {
+            alert('não há ambientes no momento');
             throw new Error("🌿 environment must be informed");
         }
     }
@@ -391,7 +414,11 @@ let ruculaGlobal = (() => {
             }
             let env = configuration.environments.find(c => c.env === enviroment);
             if (env == undefined || env == null) {
-                throw new Error("🌿 environment not found");
+                var manualEnviroment = prompt('Ambiente não existe, considere outras alternativas!', configuration.environments[0].env);
+                if (manualEnviroment == null) {
+                    throw new Error("🌿 environment not found");
+                }
+                ruculaGlobal.setEnviroment(manualEnviroment);
             }
             configuration.chosenEnvironment = env;
         },
@@ -410,34 +437,43 @@ let ruculaGlobal = (() => {
 class URLRucula {
     _URL;
     managmentObject;
-    constructor(managmentObject, URL) {
+    constructor(managmentObject, URL = {}) {
+        if (URL.absolute == null)
+            URL.absolute = '';
+        if (URL.relative == null)
+            URL.relative = '';
+        if (URL.params == null)
+            URL.params = '';
         this._URL = URL;
         this.managmentObject = managmentObject;
     }
     getURL() {
+        let url = '';
         if (this._URL == undefined) {
             return this.domain();
         }
-        let URL = this._URL;
-        if (URL?.absolute?.length > 0) {
-            let url = this.path(URL.absolute);
-            return url;
+        if (this._URL.absolute.length > 0) {
+            url = this.path(this._URL.absolute);
         }
-        let url = this.domain();
-        if (URL?.relative?.length > 0) {
-            let path = this.path(URL.relative);
+        else {
+            url = this.domain();
+        }
+        if (this._URL.relative.length > 0) {
+            let path = this.path(this._URL.relative);
             url = `${url}/${path}`;
         }
         let params = '';
-        if (URL?.params?.length > 0) {
-            params = this.path(URL.params);
+        if (this._URL.params.length > 0) {
+            params = this.path(this._URL.params);
             url = `${url}?${params}`;
             return url;
         }
+        if (url == '') {
+            return this.domain();
+        }
         return url;
     }
-    domain(env = '') {
-        ruculaGlobal.getEnvironment();
+    domain() {
         let enviroment = ruculaGlobal.getEnvironment();
         if (enviroment.port) {
             return `${enviroment.hostname}:${enviroment.port}`;
@@ -454,7 +490,7 @@ class URLRucula {
         var matches = path.matchAll(regex);
         for (const match of matches) {
             var propertValue = match[3];
-            var value = this.managmentObject.getPropert(propertValue);
+            var value = this.managmentObject?.getPropert(propertValue);
             path = path.replace(match[0], `${match[1]}${value}`);
         }
         return path;
@@ -464,7 +500,7 @@ class URLRucula {
         var matches = path.matchAll(regex);
         for (const match of matches) {
             var propertValue = match[1];
-            var value = this.managmentObject.getPropert(propertValue);
+            var value = this.managmentObject?.getPropert(propertValue);
             path = path.replace(match[0], `/${value}`);
         }
         return path;
@@ -474,16 +510,14 @@ class URLRucula {
 class EventButton {
     field;
     managmentObject;
-    windowBaseDOM;
     P;
-    constructor(field, managmentObject, windowBaseDOM, P) {
+    constructor(field, managmentObject, P) {
         this.field = field;
         this.managmentObject = managmentObject;
-        this.windowBaseDOM = windowBaseDOM;
         this.P = P;
     }
-    eventButton(pathController, buttons) {
-        let rucula = this.windowBaseDOM.getElementRoot();
+    eventButton(ruculaForm, pathController, buttons) {
+        let rucula = ruculaForm;
         buttons?.filter(b => b.type === "button")
             .forEach((button) => {
             let element = document?.getElementById(`${this.P}${button.target}`);
@@ -499,43 +533,52 @@ class EventButton {
             let eventButton = new CustomEvent(`${this.P}${button.target}`, object);
             let eventButtonDependency = new CustomEvent(`${this.P}${button.target}.dependency`, dependency);
             element?.addEventListener("click", () => {
+                if (button.URL) {
+                    let url = new URLRucula(this.managmentObject, button.URL);
+                    object.detail.url = url.getURL();
+                }
+                let optionObjectReturn = button?.body;
+                let defaultsButton = [
+                    this.P + constTargetButtonCrudDefault.SAVE,
+                    this.P + constTargetButtonCrudDefault.ALTER,
+                    this.P + constTargetButtonCrudDefault.DELETE,
+                ];
+                if (optionObjectReturn == undefined && defaultsButton.indexOf(button.target) > -1) {
+                    rucula.dispatchEvent(eventButton);
+                    return;
+                }
                 let dependencyCount = this.managmentObject.tableDependency.dependenciesCount();
                 if (dependencyCount > 0) {
                     this.field.focusFieldsWithDependency();
                     rucula.dispatchEvent(eventButtonDependency);
                     return;
                 }
-                if (button.URL) {
-                    let url = new URLRucula(this.managmentObject, button.URL);
-                    object.detail.url = url.getURL();
-                }
-                let option = button?.body;
-                if (option == undefined) {
-                    rucula.dispatchEvent(eventButton);
-                    return;
-                }
-                if (option == '') {
+                if (optionObjectReturn === '') {
                     object.detail.body = this.managmentObject.objectSeparate();
                 }
-                if (option == '.') {
+                if (optionObjectReturn === '.') {
                     object.detail.body = this.managmentObject.objectFull();
                 }
-                if (['', '.', undefined].find(c => c != option) == undefined) {
-                    object.detail.body = this.managmentObject.objectUnique(option);
+                if (optionObjectReturn && String(optionObjectReturn).length > 1) {
+                    object.detail.body = this.managmentObject.objectUnique(optionObjectReturn);
                 }
                 rucula.dispatchEvent(eventButton);
             });
         });
     }
-    openCloseRightListButtons() {
-        const openClose = document.getElementById(`${this.P}r-a-menu-vertical`);
-        const listRight = document.querySelector(`.${this.P}r-vertical-actions`);
-        const openClosemobile = document.getElementById(`${this.P}${constIdBaseWindow.BUTTONS_MENU_VERTICAL_MOBILE}`);
-        openClose?.addEventListener("click", () => {
-            listRight?.classList.toggle("r-display-none");
+    openCloseRightListButtonsActions() {
+        const buttonOpenClose = document.getElementById(`${this.P}r-a-menu-vertical`);
+        const buttonMobileClose = document.getElementById(`${this.P}${constIdBaseWindow.BUTTON_MENU_VERTICAL_MOBILE_CLOSE}`);
+        const buttonOpenClosemobile = document.getElementById(`${this.P}${constIdBaseWindow.BUTTONS_MENU_VERTICAL_MOBILE}`);
+        const divRightListButtonsActions = document.querySelector(`.r-vertical-actions`);
+        buttonOpenClose?.addEventListener("click", () => {
+            divRightListButtonsActions?.classList.toggle("r-display-none");
         });
-        openClosemobile?.addEventListener("click", () => {
-            listRight?.classList.toggle("r-display-none");
+        buttonOpenClosemobile?.addEventListener("click", () => {
+            divRightListButtonsActions?.classList.toggle("r-display-block");
+        });
+        buttonMobileClose?.addEventListener("click", () => {
+            divRightListButtonsActions?.classList.toggle("r-display-block");
         });
     }
 }
@@ -587,6 +630,9 @@ let defaultValues = (() => {
     }
     return {
         setDefault: (window) => {
+            if (!window) {
+                return;
+            }
             window.grid ??= true;
             window.gridFooter ??= true;
             window.gridSearch ??= true;
@@ -601,13 +647,11 @@ let defaultValues = (() => {
 })();
 
 class LayoutFrame {
-    windowBaseDOM;
     P;
-    constructor(windowBaseDOM, P) {
-        this.windowBaseDOM = windowBaseDOM;
+    constructor(P) {
         this.P = P;
     }
-    configureLayout(window) {
+    configureLayout(window, principalElementRucula) {
         if (window.layout.items === undefined) {
             return;
         }
@@ -615,7 +659,9 @@ class LayoutFrame {
         let colLength = window.layout.items[0].length;
         window.layout.tamplateColumns = colLength;
         window.layout.tamplateRow = rowLength;
-        this.setGridContainer(window.layout.tamplateColumns, window.layout.tamplateRow);
+        var tamplateColumns = window.layout.tamplateColumns;
+        principalElementRucula.style.gridTemplateColumns = `repeat(${tamplateColumns},1fr)`;
+        principalElementRucula.style.gridTemplateRows = 'max-content';
         for (let row = 1; row <= rowLength; row++) {
             for (let col = 1; col <= colLength; col++) {
                 let item = window.frames.find(c => c.alias == window.layout.items[row - 1][col - 1]);
@@ -636,29 +682,26 @@ class LayoutFrame {
             }
         }
     }
-    setGridContainer(tamplateColumns, tamplateRows) {
-        let form = this.windowBaseDOM.getPrincipalElementRucula();
-        form.style.gridTemplateColumns = `repeat(${tamplateColumns},1fr)`;
-        form.style.gridTemplateRows = `repeat(${tamplateRows},1fr )`;
-    }
 }
 
-class ButtonsBase {
+class DOMButtonsCheck {
     buttonCreate;
     buttonAlter;
     buttonDelete;
     buttonsPlus;
     olButtonsPlus;
     P;
-    constructor(P) {
+    crud;
+    constructor(P, crud) {
         this.P = P;
+        this.crud = crud;
     }
-    initButtonsTypeCrudDefault() {
+    buttonCrudDefault() {
         this.buttonCreate = document.getElementById(`${this.P}${constTargetButtonCrudDefault.SAVE}`);
         this.buttonAlter = document.getElementById(`${this.P}${constTargetButtonCrudDefault.ALTER}`);
         this.buttonDelete = document.getElementById(`${this.P}${constTargetButtonCrudDefault.DELETE}`);
     }
-    initButtonPlus() {
+    SpecificRightButtons() {
         this.buttonsPlus = document.getElementById(`${this.P}${constIdBaseWindow.BUTTONS_MENU_VERTICAL}`);
         this.olButtonsPlus = document.getElementById(`${this.P}${constIdBaseWindow.BUTTONS_MENU_VERTICAL_LIST}`);
         if (this.olButtonsPlus.querySelectorAll("button,a").length == 0) {
@@ -684,16 +727,18 @@ class ButtonsBase {
     removeDelete() {
         this.buttonDelete.remove();
     }
-    crud(crud) {
-        if (crud == "" || crud == undefined) {
+    removeUnusedButtons() {
+        this.buttonCrudDefault();
+        this.SpecificRightButtons();
+        if (this.crud == "" || this.crud == undefined) {
             this.buttonCreate.remove();
             this.buttonAlter.remove();
             this.buttonDelete.remove();
             return;
         }
         let options = "crud";
-        for (let index = 0; index < crud.length; index++) {
-            let indexof = options.indexOf(crud[index]);
+        for (let index = 0; index < this.crud.length; index++) {
+            let indexof = options.indexOf(this.crud[index]);
             options = options.replace(options[indexof], "");
         }
         if (options.length < 1 || (options.length == 1 && options[0] == "r")) {
@@ -744,8 +789,8 @@ class Popup {
     boxShow;
     boxShowAppendChield(element) {
         this.boxShow = document.getElementById(`${this.prefix}r-box-show`);
-        this.boxShow.appendChild(element);
-        this.boxShow.classList.add('r-box-show-center');
+        this.boxShow?.appendChild(element);
+        this.boxShow?.classList.add('r-box-show-center');
     }
     messageElement(config) {
         let message = document.createElement('div');
@@ -791,7 +836,10 @@ class Popup {
             }
         }, timeout);
     }
-    closeOKOrCancel(callback, div) {
+    closeOKOrCancel(callback, div, callbackInTimeout = false) {
+        if (callbackInTimeout) {
+            callback(constYesNo.NO);
+        }
         let ok = div.querySelector('button.ok');
         let cancel = div.querySelector('button.cancel');
         ok?.addEventListener('click', () => {
@@ -904,10 +952,12 @@ class RuculaLogs {
 
 class EventManagment {
     managmentObject;
-    windowBaseDOM;
-    constructor(managmentObject, windowBaseDOM) {
+    p;
+    elementRoot;
+    constructor(p, managmentObject, elementRoot) {
+        this.p = p;
         this.managmentObject = managmentObject;
-        this.windowBaseDOM = windowBaseDOM;
+        this.elementRoot = elementRoot;
     }
     getFieldDetails(event) {
         let identity = event.detail.identity;
@@ -922,9 +972,9 @@ class EventManagment {
         };
     }
     on(event, callback, query) {
-        let rucula = this.windowBaseDOM.getElementRoot();
+        let rucula = this.elementRoot;
         if (query == undefined) {
-            rucula.addEventListener(event, (e) => callback(e));
+            rucula.addEventListener(`${this.p}${event}`, (e) => callback(e));
             return;
         }
         let itens = rucula.querySelectorAll(query);
@@ -940,6 +990,7 @@ class FrameElement {
     frameEvent;
     button;
     fieldMenuContext;
+    inputValueSnapshot = [];
     constructor(managmentObject, field, frameEvent, button, fieldMenuContext) {
         this.managmentObject = managmentObject;
         this.field = field;
@@ -978,6 +1029,11 @@ class FrameElement {
             }
         });
     }
+    revertToInit() {
+        for (let index = 0; index < this.inputValueSnapshot.length; index++) {
+            this.inputValueSnapshot[index].element.value = this.inputValueSnapshot[index].value;
+        }
+    }
 }
 
 class FrameElementBlock extends FrameElement {
@@ -985,7 +1041,6 @@ class FrameElementBlock extends FrameElement {
         super(managmentObject, field, frameEvent, button, fieldMenuContext);
     }
     create(frame) {
-        this.managmentObject.configFieldBlock(frame);
         const frameElement = this.createbase(frame);
         const div = document.createElement("div");
         div.classList.add("r-q-i");
@@ -1005,6 +1060,10 @@ class FrameElementBlock extends FrameElement {
             this.fieldMenuContext.infoSet({
                 identity: field.identity,
                 field: field
+            });
+            this.inputValueSnapshot.push({
+                element: fieldElement,
+                value: fieldElement.value
             });
         });
         this.setValuesDefined(frame, div);
@@ -1124,8 +1183,7 @@ class FameLineTable {
         thTitle.setAttribute('colspan', String(columnsLength.length));
         return thead;
     }
-    createRowDetail(frame) {
-        this.managmentObject.addLine(frame);
+    createRowDetail(frame, inputSnapshot) {
         let tr = document.createElement('tr');
         const tdActions = document.createElement('td');
         tdActions.setAttribute('ruc-action', '');
@@ -1149,6 +1207,12 @@ class FameLineTable {
                 identity: field.identity,
                 field: field
             });
+            if (inputSnapshot) {
+                inputSnapshot.push({
+                    element: elementInput,
+                    value: elementInput.value
+                });
+            }
         });
         let rowCount = this.managmentObject.count(frame.identity);
         this.callbackSetValuesDefined(frame, tr);
@@ -1164,6 +1228,7 @@ class FameLineTable {
     }
     createNewRowDetail(identityObject) {
         let frame = configWindow.frame.get(identityObject, this.P);
+        this.managmentObject.addLine(frame);
         const row = this.createRowDetail(frame);
         row.querySelector("input")?.focus();
         this.frameElementLine.eventKeyDownKeyUpLineFrame(row);
@@ -1234,7 +1299,7 @@ class FrameElementLine extends FrameElement {
         thTitle.appendChild(title);
         table.appendChild(rowHeader);
         const tbody = document.createElement('tbody');
-        const rowDetail = this.fameLineTable.createRowDetail(frame);
+        const rowDetail = this.fameLineTable.createRowDetail(frame, this.inputValueSnapshot);
         let td = this.fameLineTable.getCellActions(rowDetail);
         td?.appendChild(this.createTDActions(frame.identity));
         tbody.appendChild(rowDetail);
@@ -1350,9 +1415,20 @@ function generateUUID(sinal) {
 class ManagmentObject {
     fragment;
     tableDependency;
-    constructor(fragment, tableDependency) {
+    constructor(fragment, tableDependency, frames) {
         this.fragment = fragment;
         this.tableDependency = tableDependency;
+        if (frames.length > 0) {
+            this.initObjects(frames);
+            frames.forEach(frame => {
+                if (frame.type === 'block') {
+                    this.configFieldBlock(frame);
+                }
+                if (frame.type === 'line') {
+                    this.addLine(frame);
+                }
+            });
+        }
     }
     pathObjectBase = [];
     initObjects(frames) {
@@ -1601,6 +1677,7 @@ class TableDependency {
     MAX_LENGHT = '2';
     MAX = '3';
     MIN = '4';
+    REGEX = '5';
     moveImbernateToNotResolved(identityObject) {
         let dependency = this.dependencyesNotResolved.find(c => c.identityObject == identityObject);
         if (dependency) {
@@ -1618,26 +1695,33 @@ class TableDependency {
         let MAX_LENGHT = this.MAX_LENGHT;
         let MAX = this.MAX;
         let MIN = this.MIN;
+        let REGEX = this.REGEX;
         let valueDependency = '';
         checkIsRequerid();
         checkMaxLength();
         checkMax();
         checkMin();
+        checkRegex();
         function checkIsRequerid() {
             if (field.requerid)
                 valueDependency += `${REQUERID},`;
         }
         function checkMaxLength() {
             if (field.maxLength > 0)
-                valueDependency += `${MAX_LENGHT}:${field.maxLength},`;
+                valueDependency += `${MAX_LENGHT}:_:${field.maxLength},`;
         }
         function checkMax() {
             if (field.max > 0)
-                valueDependency += `${MAX}:${field.max},`;
+                valueDependency += `${MAX}:_:${field.max},`;
         }
         function checkMin() {
             if (field.min > 0)
-                valueDependency += `${MIN}:${field.min},`;
+                valueDependency += `${MIN}:_:${field.min},`;
+        }
+        function checkRegex() {
+            if (field.regex) {
+                valueDependency += `${REGEX}:_:${field.regex},`;
+            }
         }
         valueDependency = this.removeLastComa(valueDependency);
         if (valueDependency) {
@@ -1664,12 +1748,13 @@ class TableDependency {
         let MAX_LENGHT = this.MAX_LENGHT;
         let MAX = this.MAX;
         let MIN = this.MIN;
+        let REGEX = this.REGEX;
         let dependencyExpected = fragment.config.dependency;
         let dependencyResolved = '';
         dependencyExpected
             .split(',')
             .forEach(expected => {
-            let identification = expected.split(':')[0];
+            let identification = expected.split(':_:')[0];
             if (identification == REQUERID) {
                 let result = this.consistRequerid(value);
                 if (result) {
@@ -1677,27 +1762,33 @@ class TableDependency {
                 }
             }
             if (identification == MAX_LENGHT) {
-                let result = this.consistMaxLen(dependencyExpected, value);
+                let result = this.consistMaxLen(expected, value);
                 if (result) {
                     dependencyResolved += `${MAX_LENGHT},`;
                 }
             }
             if (identification == MAX) {
-                let result = this.consistMax(dependencyExpected, value);
+                let result = this.consistMax(expected, value);
                 if (result) {
                     dependencyResolved += `${MAX},`;
                 }
             }
             if (identification == MIN) {
-                let result = this.consistMin(dependencyExpected, value);
+                let result = this.consistMin(expected, value);
                 if (result) {
                     dependencyResolved += `${MIN},`;
                 }
             }
+            if (identification == this.REGEX) {
+                let result = this.consistRegex(expected, value);
+                if (result) {
+                    dependencyResolved += `${REGEX},`;
+                }
+            }
         });
         dependencyResolved = this.removeLastComa(dependencyResolved);
-        let dependencyExpectedOnlyKeys = dependencyExpected.split(',').map(c => c.split(':')[0]);
-        let dependencyResolvedOnlyKeys = dependencyResolved.split(',').map(c => c.split(':')[0]);
+        let dependencyExpectedOnlyKeys = dependencyExpected.split(',').map(c => c.split(':_:')[0]);
+        let dependencyResolvedOnlyKeys = dependencyResolved.split(',').map(c => c.split(':_:')[0]);
         let existDependecy = false;
         for (let index = 0; index < dependencyExpectedOnlyKeys.length; index++) {
             let indexOf = dependencyResolvedOnlyKeys.indexOf(dependencyExpectedOnlyKeys[index]);
@@ -1721,7 +1812,7 @@ class TableDependency {
         return value.replace(/, *$/, '');
     }
     getValueInDependency(dependencyExpected) {
-        return dependencyExpected.split(':')[1];
+        return dependencyExpected.split(':_:')[1];
     }
     consistRequerid(value) {
         if (value == undefined || value == 0) {
@@ -1761,6 +1852,13 @@ class TableDependency {
         }
         return true;
     }
+    consistRegex(dependencyExpected, value) {
+        debugger;
+        let regex = this.getValueInDependency(dependencyExpected);
+        value = this.addValueDefault().typeString((value));
+        let reg = new RegExp(`${regex}`);
+        return reg.test(value);
+    }
     addValueDefault() {
         return {
             typeString: (value) => {
@@ -1793,6 +1891,54 @@ class TableDependency {
         return this.dependencyesNotResolved
             .filter(c => c.fieldsNotResolved.length > 0).length;
     }
+    snapshot() {
+        for (let index = 0; index < this.dependencyesNotResolved.length; index++) {
+            this.dependencyesNotResolved[index].isHibernateSnapshot = this.dependencyesNotResolved[index].isHibernate;
+            if (this.dependencyesNotResolved[index].fieldsNotResolved.length > 0) {
+                this.dependencyesNotResolved[index].fieldsNotResolvedSnapshot = [];
+            }
+            for (let indexField = 0; indexField < this.dependencyesNotResolved[index].fieldsNotResolved.length; indexField++) {
+                let value = this.dependencyesNotResolved[index].fieldsNotResolved[indexField];
+                this.dependencyesNotResolved[index].fieldsNotResolvedSnapshot?.push(value);
+            }
+        }
+    }
+    revertToInit() {
+        for (let index = 0; index < this.dependencyesNotResolved.length; index++) {
+            this.dependencyesNotResolved[index].isHibernate = this.dependencyesNotResolved[index].isHibernateSnapshot ?? false;
+            let value = this.dependencyesNotResolved[index].fieldsNotResolvedSnapshot;
+            if (value) {
+                this.dependencyesNotResolved[index].fieldsNotResolved = value;
+            }
+        }
+    }
+}
+
+function clone(obj) {
+    var copy;
+    if (null == obj || "object" != typeof obj)
+        return obj;
+    if (obj instanceof Date) {
+        copy = new Date();
+        copy.setTime(obj.getTime());
+        return copy;
+    }
+    if (obj instanceof Array) {
+        copy = [];
+        for (var i = 0, len = obj.length; i < len; i++) {
+            copy[i] = clone(obj[i]);
+        }
+        return copy;
+    }
+    if (obj instanceof Object) {
+        copy = {};
+        for (var attr in obj) {
+            if (obj.hasOwnProperty(attr))
+                copy[attr] = clone(obj[attr]);
+        }
+        return copy;
+    }
+    throw new Error("Unable to copy obj! Its type isn't supported.");
 }
 
 class Fragment {
@@ -1881,6 +2027,22 @@ class Fragment {
             c.config.propertDto == config.propertDto &&
             c.config.line == config.line);
     }
+    snapshot() {
+        for (let index = 0; index < this.objects.length; index++) {
+            this.objects[index].config.objectSnapshot = clone(this.objects[index].config.object);
+        }
+        for (let index = 0; index < this.fields.length; index++) {
+            this.fields[index].config.dependencySnapshot = this.fields[index].config.dependency;
+        }
+    }
+    revertToInit() {
+        for (let index = 0; index < this.objects.length; index++) {
+            this.objects[index].config.object = clone(this.objects[index].config.objectSnapshot);
+        }
+        for (let index = 0; index < this.fields.length; index++) {
+            this.fields[index].config.dependency = this.fields[index].config.dependencySnapshot ?? '';
+        }
+    }
 }
 
 let eventsCustom = (() => {
@@ -1949,11 +2111,11 @@ class FieldInput {
     floatLabel = ruculaGlobal?.getConfigurationGlobal()?.floatLabel;
     field;
     input;
-    windowBaseDOM;
-    constructor(field, managmentObject, windowBaseDOM) {
+    ruculaForm;
+    constructor(field, managmentObject, ruculaForm) {
         this.field = field;
         this.managmentObject = managmentObject;
-        this.windowBaseDOM = windowBaseDOM;
+        this.ruculaForm = ruculaForm;
     }
     setWidth() {
         if (this.field.width > 0) {
@@ -1976,8 +2138,8 @@ class FileEvent {
     field;
     ruculaForm;
     managmentObject;
-    constructor(managmentObject, input, field, windowBaseDOM) {
-        this.ruculaForm = windowBaseDOM.getElementRoot();
+    constructor(managmentObject, input, field, ruculaForm) {
+        this.ruculaForm = ruculaForm;
         this.managmentObject = managmentObject;
         this.input = input;
         this.field = field;
@@ -1998,6 +2160,16 @@ class FileEvent {
 
 class FileEventCheckBox extends FileEvent {
     setEventListener() {
+        this.input.addEventListener('ruculaChange', (e) => {
+            let element = e.target;
+            if (element.value == String(this.field.checkbox.on)) {
+                element.checked = true;
+            }
+            if (element.value == String(this.field.checkbox.off)) {
+                element.checked = false;
+            }
+            this.input.dispatchEvent(new Event('change'));
+        });
         this.input.addEventListener('change', (e) => {
             let element = e.target;
             if (element.checked == true) {
@@ -2025,9 +2197,46 @@ class FileEventCheckBox extends FileEvent {
     }
 }
 
+function maskInput(value, mask) {
+    let valorFormatado = '';
+    let i = 0;
+    for (let char of mask) {
+        if (char === '#') {
+            if (value[i] != null) {
+                valorFormatado += value[i];
+                i++;
+            }
+            else {
+                break;
+            }
+        }
+        else {
+            valorFormatado += char;
+        }
+    }
+    return valorFormatado;
+}
+function maskOutput(value, mask) {
+    let valorFormatado = '';
+    let i = 0;
+    for (let char of mask) {
+        if (char === '#') {
+            if (value[i] == null) {
+                break;
+            }
+            valorFormatado += value[i];
+        }
+        i++;
+    }
+    return valorFormatado;
+}
+
 class FileEventCommon extends FileEvent {
     setEventListener() {
         this.input.addEventListener('focus', () => {
+            if (this.field.mask && this.input.value) {
+                this.input.value = maskOutput(this.input.value, this.field.mask);
+            }
             this.dispatchEvent(constPrefixEventField.BEFORE);
             this.set();
         });
@@ -2038,6 +2247,11 @@ class FileEventCommon extends FileEvent {
         this.input.addEventListener('focusout', () => {
             this.dispatchEvent(constPrefixEventField.AFTER);
             this.set();
+        });
+        this.input.addEventListener('blur', () => {
+            if (this.field.mask && this.input.value) {
+                this.input.value = maskInput(this.input.value, this.field.mask);
+            }
         });
     }
 }
@@ -2055,8 +2269,8 @@ class FieldCheckbox extends FieldInput {
         return input;
     }
     setEvents() {
-        new FileEventCommon(this.managmentObject, this.input, this.field, this.windowBaseDOM);
-        new FileEventCheckBox(this.managmentObject, this.input, this.field, this.windowBaseDOM);
+        new FileEventCommon(this.managmentObject, this.input, this.field, this.ruculaForm);
+        new FileEventCheckBox(this.managmentObject, this.input, this.field, this.ruculaForm);
     }
 }
 
@@ -2114,14 +2328,15 @@ class FieldCommon extends FieldInput {
         if (this.field.type == "currency") {
             input.type = "text";
         }
+        input.value = String(this.field.value);
         this.setWidth();
         input.classList.add("r-i-control");
         this.setEvents();
     }
     setEvents() {
-        new FileEventCommon(this.managmentObject, this.input, this.field, this.windowBaseDOM);
+        new FileEventCommon(this.managmentObject, this.input, this.field, this.ruculaForm);
         if (this.field.type == constTypeInput.CURRENCY) {
-            new FileEventCurrency(this.managmentObject, this.input, this.field, this.windowBaseDOM);
+            new FileEventCurrency(this.managmentObject, this.input, this.field, this.ruculaForm);
         }
     }
 }
@@ -2138,13 +2353,21 @@ class FieldRadio extends FieldInput {
         this.setEvents();
     }
     setEvents() {
-        new FileEventCommon(this.managmentObject, this.input, this.field, this.windowBaseDOM);
+        new FileEventCommon(this.managmentObject, this.input, this.field, this.ruculaForm);
     }
 }
 
 class FileEventSelect extends FileEvent {
     setEventListener() {
+        this.input.addEventListener('focusout', (e) => {
+            this.dispatchEvent(constPrefixEventField.BEFORE);
+            this.set();
+        });
         this.input.addEventListener('change', (e) => {
+            this.dispatchEvent(constPrefixEventField.BEFORE);
+            this.set();
+        });
+        this.input.addEventListener('input', (e) => {
             this.dispatchEvent(constPrefixEventField.BEFORE);
             this.set();
         });
@@ -2165,12 +2388,18 @@ class FieldSelect extends FieldInput {
             option.value = item["value"];
             select.appendChild(option);
         });
-        this.input.value = String(this.field.value);
+        if (String(this.field.value) != '') {
+            this.input.value = String(this.field.value);
+        }
+        if (String(this.field.value) === '') {
+            this.input.querySelector('select')
+                ?.setAttribute('selected', '');
+        }
         this.setEvents();
         return select;
     }
     setEvents() {
-        new FileEventSelect(this.managmentObject, this.input, this.field, this.windowBaseDOM);
+        new FileEventSelect(this.managmentObject, this.input, this.field, this.ruculaForm);
     }
 }
 
@@ -2208,20 +2437,23 @@ class FieldTextArea extends FieldInput {
         return input;
     }
     setEvents() {
-        new FileEventCommon(this.managmentObject, this.input, this.field, this.windowBaseDOM);
+        new FileEventCommon(this.managmentObject, this.input, this.field, this.ruculaForm);
     }
 }
 
 class Field {
     managmentObject;
-    windowBaseDOM;
-    constructor(managmentObject, windowBaseDOM) {
+    ruculaForm;
+    constructor(managmentObject, ruculaForm) {
         this.managmentObject = managmentObject;
-        this.windowBaseDOM = windowBaseDOM;
+        this.ruculaForm = ruculaForm;
     }
-    createSpanLabelIsRequerid() {
+    createSpanLabelIsRequerid(isRegex = false) {
         const span = document.createElement('span');
         span.innerText = " *";
+        if (isRegex) {
+            span.innerText = " *^";
+        }
         span.style.color = "red";
         return span;
     }
@@ -2238,7 +2470,7 @@ class Field {
         label.textContent = field.description;
         if (field.requerid == true) {
             label.textContent = label.textContent;
-            label.append(this.createSpanLabelIsRequerid().cloneNode(true));
+            label.append(this.createSpanLabelIsRequerid(field.regex != null).cloneNode(true));
         }
         const floatLabel = ruculaGlobal?.getConfigurationGlobal()?.floatLabel;
         if (floatLabel == true && (this.isSimple(field.type) || this.isTextArea(field.type) || this.isSelect(field.type))) {
@@ -2312,19 +2544,19 @@ class Field {
         let fieldStrategy = new FieldStrategy();
         this.checkTypeField(field.type);
         if (this.isSimple(field.type)) {
-            fieldStrategy.setStrategy(new FieldCommon(field, this.managmentObject, this.windowBaseDOM));
+            fieldStrategy.setStrategy(new FieldCommon(field, this.managmentObject, this.ruculaForm));
         }
         if (this.isSelect(field.type)) {
-            fieldStrategy.setStrategy(new FieldSelect(field, this.managmentObject, this.windowBaseDOM));
+            fieldStrategy.setStrategy(new FieldSelect(field, this.managmentObject, this.ruculaForm));
         }
         if (isCheckBox()) {
-            fieldStrategy.setStrategy(new FieldCheckbox(field, this.managmentObject, this.windowBaseDOM));
+            fieldStrategy.setStrategy(new FieldCheckbox(field, this.managmentObject, this.ruculaForm));
         }
         if (this.isTextArea(field.type)) {
-            fieldStrategy.setStrategy(new FieldTextArea(field, this.managmentObject, this.windowBaseDOM));
+            fieldStrategy.setStrategy(new FieldTextArea(field, this.managmentObject, this.ruculaForm));
         }
         if (isRadio()) {
-            fieldStrategy.setStrategy(new FieldRadio(field, this.managmentObject, this.windowBaseDOM));
+            fieldStrategy.setStrategy(new FieldRadio(field, this.managmentObject, this.ruculaForm));
         }
         element = fieldStrategy.create();
         if (field.maxLength) {
@@ -2345,6 +2577,9 @@ class Field {
         function isCheckBox() {
             return field.type[0] == constTypeInput.CHECKBOX;
         }
+        element.addEventListener('blur', () => {
+            element.classList.remove(constInputClass.FOCUS_IN_INPUT_WITH_DEPENDENCY);
+        });
         return element;
     }
     focusFieldsWithDependency() {
@@ -2357,9 +2592,6 @@ class Field {
                 input?.classList.add(constInputClass.FOCUS_IN_INPUT_WITH_DEPENDENCY);
             });
         });
-    }
-    cleanFocusDependency(input) {
-        input.classList.remove(constInputClass.FOCUS_IN_INPUT_WITH_DEPENDENCY);
     }
 }
 
@@ -2440,9 +2672,13 @@ class ComponentIconButton {
 }
 
 class ElementBase {
+    p;
+    constructor(p) {
+        this.p = p;
+    }
     element;
     addDataIdAttribute(button) {
-        this.element.setAttribute("id", button.target);
+        this.element.setAttribute("id", `${this.p}${button.target}`);
     }
     addColor(color) {
         if (color)
@@ -2517,10 +2753,10 @@ class Button {
             throw new Error("tipo do botão deve ser button ou link");
         }
         if (button.type == "button") {
-            this.elementStrategy = new ElementButton();
+            this.elementStrategy = new ElementButton(this.P);
         }
         if (button.type == "link") {
-            this.elementStrategy = new ElementLink();
+            this.elementStrategy = new ElementLink(this.P);
         }
         return this.elementStrategy.createElement(button);
     }
@@ -2590,14 +2826,15 @@ class Button {
         }
     }
     prepareButtonsInLeftBox(button) {
-        const ListRightButtons = document.getElementById(`${this.P}r-a-menu-vertical-list`);
+        const ListRightButtons = document.getElementById(`${this.P}${constIdBaseWindow.BUTTONS_MENU_VERTICAL_LIST}`);
         let buttons = button?.filter(c => this.buttonIsNotDefault(c.target));
         if (buttons?.length == 0 || buttons == undefined) {
             document.querySelector(`.${this.P}r-vertical-actions`)?.classList.add('r-display-none');
         }
         buttons?.forEach(b => {
             const li = document.createElement("li");
-            li.appendChild(this.createButtonOrLink(b));
+            let button = this.createButtonOrLink(b);
+            li.appendChild(button);
             ListRightButtons?.appendChild(li);
         });
         this.prepareLocalizations();
@@ -2696,58 +2933,58 @@ class FieldMenuContext {
 }
 
 class PaginationEvents {
-    windowBaseDOM;
-    constructor(windowBaseDOM) {
-        this.windowBaseDOM = windowBaseDOM;
+    globalWindow;
+    p;
+    constructor(p, globalWindow) {
+        this.p = p;
+        this.globalWindow = globalWindow;
     }
     headerSearch(gridSearch) {
-        let search = document.getElementById(constPagination.FIND);
+        let search = document.getElementById(`${this.p}${constPagination.FIND}`);
         if (gridSearch == false) {
             search?.remove();
         }
-        let elementRoot = this.windowBaseDOM.getElementRoot();
         let body = {
             detail: {
                 value: ''
             }
         };
-        let event = new CustomEvent('r-pagination-find', body);
+        let event = new CustomEvent(`${this.p}r-pagination-find`, body);
         search?.addEventListener('submit', (e) => {
             e.preventDefault();
             var formData = new FormData(e.target);
             body.detail.value = String(formData.get('r-find-value'));
-            elementRoot.dispatchEvent(event);
+            this.globalWindow.dispatchEvent(event);
         });
     }
     fotter(gridFooter) {
         if (gridFooter == false) {
             document.getElementById('r-act-grid-footer')?.remove();
         }
-        let elementRoot = this.windowBaseDOM.getElementRoot();
         let pagination = {
             detail: {
                 page: ''
             }
         };
-        let event = new CustomEvent('r-pagination', pagination);
-        document.getElementById(constPagination.FIRST)?.addEventListener('click', () => dispatchEvent('first'));
-        document.getElementById(constPagination.LAST)?.addEventListener('click', () => dispatchEvent('last'));
-        document.getElementById(constPagination.PREVIOUS)?.addEventListener('click', () => dispatchEvent('previous'));
-        document.getElementById(constPagination.NEXT)?.addEventListener('click', () => dispatchEvent('next'));
-        function dispatchEvent(page) {
+        let event = new CustomEvent(`${this.p}r-pagination`, pagination);
+        document.getElementById(`${this.p}${constPagination.FIRST}`)?.addEventListener('click', () => dispatchEvent('first', this.globalWindow));
+        document.getElementById(`${this.p}${constPagination.LAST}`)?.addEventListener('click', () => dispatchEvent('last', this.globalWindow));
+        document.getElementById(`${this.p}${constPagination.PREVIOUS}`)?.addEventListener('click', () => dispatchEvent('previous', this.globalWindow));
+        document.getElementById(`${this.p}${constPagination.NEXT}`)?.addEventListener('click', () => dispatchEvent('next', this.globalWindow));
+        function dispatchEvent(page, globalWindow) {
             pagination.detail.page = page;
-            elementRoot.dispatchEvent(event);
+            globalWindow.dispatchEvent(event);
         }
         let row = {
             detail: {
                 row: 0
             }
         };
-        let eventRow = new CustomEvent('r-pagination-row', row);
-        document.getElementById(constPagination.ROW_NUMBER)?.addEventListener('change', (e) => {
+        let eventRow = new CustomEvent(`${this.p}r-pagination-row`, row);
+        document.getElementById(`${this.p}${constPagination.ROW_NUMBER}`)?.addEventListener('change', (e) => {
             var select = e.target;
             row.detail.row = Number(select.value);
-            elementRoot.dispatchEvent(eventRow);
+            this.globalWindow.dispatchEvent(eventRow);
         });
     }
 }
@@ -2769,7 +3006,7 @@ class MenuContext {
         return div;
     }
     findMenu(id) {
-        let menu = this.menusContext.find(c => c.id == contextMenu.INPUT);
+        let menu = this.menusContext.find(c => c.id == id);
         return menu.element;
     }
     addItem(idMenuContext, buttonConfig) {
@@ -2828,11 +3065,93 @@ function P(prefixe, text) {
     return `${prefixe}${text}`;
 }
 
+class WindowAPI {
+    url;
+    constructor(url) {
+        this.url = url;
+    }
+    async get(p) {
+        var myHeaders = new Headers();
+        var init = {
+            method: "GET",
+            headers: myHeaders,
+            mode: "cors",
+            cache: "default",
+        };
+        return await fetch(this.url, init)
+            .then((response) => {
+            if (response.ok) {
+                return response.json();
+            }
+            alert('Não foi possível abrir a Janela desejada');
+        })
+            .then(json => {
+            return JSON.parse(json);
+        })
+            .catch(() => {
+            var pp = new Popup(p);
+            pp.error({
+                text: 'Não foi possível abrir a Janela desejada'
+            });
+        });
+    }
+}
+
+class ButtonManaged {
+    P;
+    buttonsManeged;
+    atualModel = 'init';
+    modes = {
+        init: 'init',
+        delete: 'delete',
+        save: 'save',
+        alter: 'alter'
+    };
+    constructor(P, buttonsManeged) {
+        this.P = P;
+        this.buttonsManeged = buttonsManeged;
+    }
+    initTosave() {
+        if (this.atualModel != this.modes.init) {
+            return;
+        }
+        let options = [`${this.P}r-a-save`];
+        this.set(options);
+        this.atualModel = this.modes.save;
+    }
+    saveToAlter() {
+        let options = [`${this.P}r-a-alter`, `${this.P}r-a-delete`];
+        this.set(options);
+        this.atualModel = this.modes.alter;
+    }
+    deleteToInit() {
+        let options = [''];
+        this.set(options);
+        this.atualModel = this.modes.init;
+    }
+    disableAll() {
+        let options = [''];
+        this.set(options);
+        this.atualModel = this.modes.init;
+    }
+    set(options) {
+        this.buttonsManeged.forEach(b => {
+            let index = options.indexOf(b.id);
+            if (index != -1) {
+                b.classList.remove('r-a-b-disable');
+            }
+            else {
+                b.classList.add('r-a-b-disable');
+            }
+        });
+    }
+}
+
 class Rucula {
     P = `ruculajs_${Date.now()}`;
     windowBaseDOM;
     window;
-    elementRucula;
+    globalWindow;
     elementFormRucula;
     menuContext;
     popup;
@@ -2848,59 +3167,98 @@ class Rucula {
     config;
     fieldMenuContext;
     paginationEvents;
-    buttonsBase;
+    domButtomCheck;
+    frameBlock;
+    frameLine;
     loader;
+    buttonManaged;
+    perspective;
     constructor(config) {
+        this.perspective = config.perspective;
         config.id ??= 'rucula-js';
+        this.config = config;
         ruculaGlobal.initGlobalConfiguration(config.global);
-        this.window = config.window;
-        this.elementRucula = document.getElementById(config.id);
+    }
+    async init() {
+        if (this.config.urlWindow) {
+            let url = this.url(this.config.urlWindow).getURL();
+            var windowApi = new WindowAPI(url);
+            this.window = await windowApi.get(this.P);
+        }
+        else {
+            this.window = this.config.window;
+        }
+        this.configurePerspective();
+        this.globalWindow = document.getElementById(this.config.id);
         this.popup = new Popup(this.P);
         this.menuContext = new MenuContext(this.P);
         this.fieldMenuContext = new FieldMenuContext(this.popup, this.menuContext, this.P);
-        this.windowBaseDOM = new WindowBaseDOM(this.fieldMenuContext, this.menuContext, this.P);
-        this.windowBaseDOM.setElementRoot(config.id);
-        this.layoutFrame = new LayoutFrame(this.windowBaseDOM, this.P);
+        this.layoutFrame = new LayoutFrame(this.P);
         this.tableDependency = new TableDependency();
         this.fragment = new Fragment(this.tableDependency);
-        this.managmentObject = new ManagmentObject(this.fragment, this.tableDependency);
-        this.event = new EventManagment(this.managmentObject, this.windowBaseDOM);
-        this.field = new Field(this.managmentObject, this.windowBaseDOM);
-        this.eventButton = new EventButton(this.field, this.managmentObject, this.windowBaseDOM, this.P);
-        this.frameEvent = new FrameEvent(this.managmentObject);
-        this.paginationEvents = new PaginationEvents(this.windowBaseDOM);
-        this.buttonsBase = new ButtonsBase(this.P);
+        this.paginationEvents = new PaginationEvents(this.P, this.globalWindow);
+        this.domButtomCheck = new DOMButtonsCheck(this.P, this.window?.crud);
         this.loader = new LoaderManagment(this.P);
         this.button = new Button(() => {
-            let rucula = new Rucula(config);
-            rucula.create();
+            let rucula = new Rucula(this.config);
+            rucula.init();
             this.config?.reload();
         }, this.popup, this.P);
+        defaultValues.setDefault(this.window);
+        this.windowBaseDOM = new WindowBaseDOM(this.P, {
+            globalWindow: this.globalWindow,
+            openLeftGrid: this.window?.grid ?? false,
+            windowName: this.window?.name,
+            type: this.window.type
+        });
+        if (this.window == null) {
+            let message = 'Não foi possível carregar janela informada. Considere entrar em contato com o administrador';
+            this.popup.error({
+                text: message
+            });
+            throw new Error(message);
+        }
+        this.managmentObject = new ManagmentObject(this.fragment, this.tableDependency, this.window.frames);
+        this.event = new EventManagment(this.P, this.managmentObject, this.globalWindow);
+        this.field = new Field(this.managmentObject, this.globalWindow);
+        this.eventButton = new EventButton(this.field, this.managmentObject, this.P);
+        this.frameEvent = new FrameEvent(this.managmentObject);
+        this.frameBlock = new FrameElementBlock(this.managmentObject, this.field, this.frameEvent, this.button, this.fieldMenuContext);
+        this.frameLine = new FrameElementLine(this.managmentObject, this.field, this.frameEvent, this.button, this.fieldMenuContext, this.P);
     }
     create() {
-        this.cleanRucula();
         let eventInit = new Event('rucula.init');
         let eventLoad = new Event('rucula.load');
-        let rucula = this.windowBaseDOM.getElementRoot();
-        rucula.dispatchEvent(eventInit);
+        this.globalWindow.dispatchEvent(eventInit);
         configWindow.set(this.window, this.P);
-        defaultValues.setDefault(this.window);
-        this.windowBaseDOM.createWindowBase(this.elementRucula.id);
+        this.menuContext.init();
+        this.fieldMenuContext.init();
         this.addHomeWindow();
-        this.managmentObject.initObjects(this.window.frames);
-        this.windowBaseDOM.createNameWindow(this.window.name);
-        this.windowBaseDOM.closeLeftGrid(this.window.grid);
         this.elementFormRucula = this.windowBaseDOM.getPrincipalElementRucula();
+        let buttons = this.globalWindow.querySelectorAll(`#${this.P}action-crud button.managed`);
+        this.buttonManaged = new ButtonManaged(this.P, buttons);
+        let form = this.globalWindow.querySelector('form.r-window-work');
+        form?.addEventListener('change', () => {
+            this.buttonManaged.initTosave();
+        });
         this.paginationEvents.headerSearch(this.window.gridSearch);
         this.paginationEvents.fotter(this.window.gridFooter);
-        this.layoutFrame.configureLayout(this.window);
-        this.createFrames();
         this.createButtons();
-        this.buttonsBase.initButtonsTypeCrudDefault();
-        this.buttonsBase.initButtonPlus();
-        this.buttonsBase.crud(this.window?.crud);
-        rucula.dispatchEvent(eventLoad);
+        if (this.window.type != 'header') {
+            this.domButtomCheck.removeUnusedButtons();
+        }
+        if (this.window.type == 'crud') {
+            this.layoutFrame.configureLayout(this.window, this.elementFormRucula);
+            this.createFrames();
+        }
+        this.globalWindow.dispatchEvent(eventLoad);
         window.rucula = new RuculaLogs(this.managmentObject);
+        this.tableDependency.snapshot();
+        this.fragment.snapshot();
+        this.event.on('erase-window', () => {
+            this.buttonManaged.disableAll();
+            this.revertToinit();
+        });
     }
     addHomeWindow() {
         if (this.window?.iconHome) {
@@ -2919,34 +3277,27 @@ class Rucula {
     reload(callback) {
         callback();
     }
-    cleanRucula() {
-        for (let index = 0; index < this.elementRucula.childNodes.length; index++) {
-            this.elementRucula.childNodes[index].remove();
-        }
-    }
     createButtons(type = "CRUD") {
         if (type == "CRUD") {
             this.button.prepareButtonsInLeftBox(this.window.button);
         }
-        this.eventButton.eventButton(this.window.pathController, this.window.button);
-        this.eventButton.openCloseRightListButtons();
+        this.eventButton.eventButton(this.globalWindow, this.window.pathController, this.window.button);
+        this.eventButton.openCloseRightListButtonsActions();
     }
     createFrames() {
-        let frameBlock = new FrameElementBlock(this.managmentObject, this.field, this.frameEvent, this.button, this.fieldMenuContext);
-        let frameLine = new FrameElementLine(this.managmentObject, this.field, this.frameEvent, this.button, this.fieldMenuContext, this.P);
         this.window.frames?.forEach(frame => {
             if (frame.type == constTypeFrame.BLOCK) {
-                const block = frameBlock.create(frame);
+                const block = this.frameBlock.create(frame);
                 this.elementFormRucula.appendChild(block);
-                eventCreated(block, this.windowBaseDOM.getElementRoot());
+                eventCreated(this.P, block, this.globalWindow);
             }
             if (frame.type == constTypeFrame.LINE) {
-                const line = frameLine.create(frame);
+                const line = this.frameLine.create(frame);
                 this.elementFormRucula.appendChild(line);
-                eventCreated(line, this.windowBaseDOM.getElementRoot());
+                eventCreated(this.P, line, this.globalWindow);
             }
-            function eventCreated(frameElement, elementRoot) {
-                var eventName = `frame.${frame.alias}.complete`;
+            function eventCreated(p, frameElement, elementRoot) {
+                var eventName = `${p}frame.${frame.alias}.complete`;
                 let event = new CustomEvent(eventName, {
                     detail: {
                         element: frameElement,
@@ -2959,7 +3310,9 @@ class Rucula {
             }
         });
     }
-    url = (URL) => new URLRucula(this.managmentObject, URL);
+    url(URL) {
+        return new URLRucula(this.managmentObject, URL);
+    }
     objectUnique(alias) {
         return this.managmentObject.objectUnique(alias);
     }
@@ -2969,6 +3322,8 @@ class Rucula {
     getSepareteObject() {
         return this.managmentObject.objectSeparate();
     }
+    eventRuculaChange = new Event('ruculaChange');
+    eventFocusOut = new Event('focusout');
     setValue(targetPath, value) {
         const ATTR_DISABLED = 'disabled';
         let identity = this.managmentObject.convertAliasToIdenty(targetPath);
@@ -2977,9 +3332,14 @@ class Rucula {
         if (disabled) {
             input.removeAttribute(ATTR_DISABLED);
         }
-        input.value = value;
         input.focus({ preventScroll: true });
+        let onChange = input.value != value && input.getAttribute('type') === 'checkbox';
+        input.value = value;
         input.blur();
+        if (onChange) {
+            input.dispatchEvent(this.eventRuculaChange);
+        }
+        input.dispatchEvent(this.eventFocusOut);
         if (disabled) {
             input.setAttribute(ATTR_DISABLED, '');
         }
@@ -2990,6 +3350,47 @@ class Rucula {
     p(text) {
         let newText = P(this.P, text);
         return newText;
+    }
+    revertToinit() {
+        this.tableDependency.revertToInit();
+        this.fragment.revertToInit();
+        this.frameBlock.revertToInit();
+        this.frameLine.revertToInit();
+    }
+    configurePerspective() {
+        if (this.perspective == null) {
+            return;
+        }
+        for (let index = 0; index < this.perspective?.frame.length; index++) {
+            var frameAlias = this.perspective?.frame[index];
+            var frame = this.window.frames.find(c => c.alias == frameAlias);
+            if (frame == null) {
+                continue;
+            }
+            let indexof = this.window.frames.indexOf(frame);
+            this.window.frames.splice(indexof, 1);
+        }
+        this.perspective?.field.sort();
+        let lastFrame;
+        for (let index = 0; index < this.perspective?.field.length; index++) {
+            let field = this.perspective?.field[index].split('.');
+            if (lastFrame?.alias != field[0]) {
+                let frame = this.window.frames.find(c => c.alias == field[0]);
+                if (frame == null) {
+                    continue;
+                }
+                lastFrame = frame;
+            }
+            remove(lastFrame, field[1]);
+        }
+        function remove(frame, propert) {
+            var field = frame.fields?.find(c => c.propertDto == propert);
+            if (field == null) {
+                return;
+            }
+            let indexof = frame.fields?.indexOf(field);
+            frame.fields?.splice(indexof, 1);
+        }
     }
 }
 

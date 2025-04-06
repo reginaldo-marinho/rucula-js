@@ -1,6 +1,6 @@
 import { button } from "./button";
 import { frame } from "./frame";
-type cssGrid = {
+export type cssGrid = {
     items: [[]];
     tamplateColumns: number;
     tamplateRow: number;
@@ -21,4 +21,3 @@ export interface window {
     joinChield: string[];
     layout: cssGrid;
 }
-export {};

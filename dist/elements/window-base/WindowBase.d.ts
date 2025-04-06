@@ -1,24 +1,26 @@
-import { MenuContext } from "../../menu-context/menu-context";
-import { FieldMenuContext } from "../form/Field/fieldMenuContext";
 export declare class WindowBaseDOM {
-    private fieldMenuContext;
-    private menuContext;
     private P;
-    constructor(fieldMenuContext: FieldMenuContext, menuContext: MenuContext, prefix: string);
-    private elementRoot;
-    createWindowBase(id: string): void;
-    createNameWindow(name: string): void;
-    componentActions(): Node;
-    createComponentCreateOrEdit(): Node;
-    prepareEventsButtonsCrud(): void;
-    openCloseContainer(): void;
-    closeLeftGrid(grid: boolean): void;
-    maximizeWindow(): void;
-    eraseWindow(ruculaWindow: HTMLDivElement): void;
-    actionCrudpreventDefault(): void;
-    openActionswindow(): void;
-    alterTheme(): void;
-    setElementRoot(id: string): void;
-    getElementRoot(): HTMLElement;
+    private ruculaWindow;
+    private globalWindow;
+    constructor(prefix: string, config: {
+        globalWindow: HTMLElement;
+        openLeftGrid: boolean;
+        windowName: string;
+        type?: string;
+    });
+    private create;
+    private widthAndHeigth;
+    private createNameWindow;
+    private cleanGlobalWindow;
+    private openCloseForm;
+    private leftGrid;
+    private createMold;
+    private bodyForm;
+    private closeLeftGrid;
+    maximizeForm(): void;
+    eraseForm(): void;
+    private actionCrudpreventDefault;
+    private openActionswindow;
+    private alterTheme;
     getPrincipalElementRucula(): HTMLFormElement;
 }

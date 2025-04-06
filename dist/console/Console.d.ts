@@ -6,6 +6,8 @@ export declare class RuculaLogs {
         identityObject: string;
         isHibernate: boolean;
         fieldsNotResolved: string[];
+        isHibernateSnapshot?: boolean;
+        fieldsNotResolvedSnapshot?: string[];
     }[];
     object(): any;
 }

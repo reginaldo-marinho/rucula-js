@@ -39,10 +39,12 @@ export declare const constTypeFrame: {
 };
 export declare const constIdBaseWindow: {
     NEW: string;
+    CLOSE_GRID: string;
     RELOAD: string;
     ERASE_WINDOW: string;
     ALTER_THEME: string;
     MAXIMIZE_WINDOW: string;
+    MAXIMIZE_GRID: string;
     ACTIONS_WINDOW: string;
     GLOBALIZATION: string;
     OLLI_GLOBALIZATION: string;
@@ -51,6 +53,7 @@ export declare const constIdBaseWindow: {
     FORM_RUCULA_JS: string;
     BUTTONS_MENU_VERTICAL: string;
     BUTTONS_MENU_VERTICAL_MOBILE: string;
+    BUTTON_MENU_VERTICAL_MOBILE_CLOSE: string;
     BUTTONS_MENU_VERTICAL_LIST: string;
     TITLE: string;
     FAVORITE: string;

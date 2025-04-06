@@ -1,11 +1,10 @@
 import { field } from "../../entities/form/field";
 import { ManagmentObject } from "../../object/ObjectManagment";
-import { WindowBaseDOM } from "../window-base/WindowBase";
 export declare class Field {
     private managmentObject;
-    windowBaseDOM: WindowBaseDOM;
-    constructor(managmentObject: ManagmentObject, windowBaseDOM: WindowBaseDOM);
-    createSpanLabelIsRequerid(): HTMLSpanElement;
+    private ruculaForm;
+    constructor(managmentObject: ManagmentObject, ruculaForm: HTMLElement);
+    createSpanLabelIsRequerid(isRegex?: boolean): HTMLSpanElement;
     createGroupOfButton(element: HTMLButtonElement | HTMLAnchorElement): HTMLDivElement;
     createGroupOfInput(field: field, element: HTMLSelectElement | HTMLInputElement | HTMLTextAreaElement): HTMLDivElement;
     checkTypeField(type: string | string[2]): void;
@@ -14,5 +13,4 @@ export declare class Field {
     isSelect(type: string): boolean;
     create(field: field): HTMLInputElement | HTMLSelectElement;
     focusFieldsWithDependency(): void;
-    cleanFocusDependency(input: HTMLSelectElement | HTMLInputElement | HTMLTextAreaElement): void;
 }

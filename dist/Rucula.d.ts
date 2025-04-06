@@ -1,15 +1,17 @@
 import { window } from "./entities/form/window";
-import { globalConfiguration } from "./global/entities/GlobalConfiguration";
 import { LoaderManagment } from "./elements/loader/loader";
 import { Popup } from "./popup/popup";
 import { EventManagment } from "./Event/event";
 import { URLRucula } from "./URL/urlManagment";
 import { ManagmentObject } from "./object/ObjectManagment";
+import { buttonURL } from "./entities/form/button";
+import { ButtonManaged } from "./elements/window-base/buttonManaged";
+import { globalConfiguration } from "./entities/global/GlobalConfiguration";
 export declare class Rucula {
     private P;
     private windowBaseDOM;
     private window;
-    private elementRucula;
+    globalWindow: HTMLElement;
     private elementFormRucula;
     private menuContext;
     popup: Popup;
@@ -25,29 +27,39 @@ export declare class Rucula {
     private config;
     private fieldMenuContext;
     private paginationEvents;
-    private buttonsBase;
+    private domButtomCheck;
+    private frameBlock;
+    private frameLine;
     loader: LoaderManagment;
+    buttonManaged: ButtonManaged;
+    private perspective?;
     constructor(config: {
         global: globalConfiguration;
-        window: window;
-        id: string | undefined;
+        urlWindow?: buttonURL;
+        window?: window;
+        perspective?: Perspective;
+        id?: string;
         reload?: () => void;
     });
+    init(): Promise<void>;
     create(): void;
     private addHomeWindow;
     reload(callback: any): void;
-    private cleanRucula;
     private createButtons;
     private createFrames;
-    url: (URL?: {
-        absolute: string;
-        relative: string;
-        params: string;
-    }) => URLRucula;
+    url(URL: buttonURL): URLRucula;
     objectUnique(alias: string): any;
     getFullObject(): any;
     getSepareteObject(): any;
+    private eventRuculaChange;
+    private eventFocusOut;
     setValue(targetPath: string, value: any): void;
     getValue(config: string): any;
     p(text: string): string;
+    revertToinit(): void;
+    private configurePerspective;
 }
+export type Perspective = {
+    frame: string[];
+    field: string[];
+};

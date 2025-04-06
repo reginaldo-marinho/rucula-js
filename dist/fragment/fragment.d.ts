@@ -23,4 +23,6 @@ export declare class Fragment {
      * @return {fragmentField}
     */
     fields_getForAliasAndPropert(config: entityConfiguration): fragmentField;
+    snapshot(): void;
+    revertToInit(): void;
 }
