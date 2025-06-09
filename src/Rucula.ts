@@ -1,6 +1,6 @@
 import { window } from "./entities/form/window";
 import { WindowBaseDOM } from "./elements/window-base/WindowBase";
-import { constIdBaseWindow, constTypeFrame, eventRucula } from "./const";
+import { constIdBaseWindow, constTypeFrame } from "./const";
 import { EventButton } from "./buttons/EventButton";
 import { configWindow } from "./window/Window";
 import { defaultValues } from "./elements/Defaults";
@@ -163,15 +163,11 @@ export class Rucula{
         
         this.createButtons()
        
-        if(this.window.type != 'header'){
-            this.domButtomCheck.removeUnusedButtons()
-        }
-        
         if(this.window.type == 'crud'){
+            this.domButtomCheck.removeUnusedButtons()
             this.layoutFrame.configureLayout(this.window,this.elementFormRucula)
             this.createFrames()
         }
-        
 
         this.globalWindow.dispatchEvent(eventLoad);
         

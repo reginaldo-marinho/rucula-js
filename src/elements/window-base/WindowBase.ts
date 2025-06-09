@@ -30,12 +30,13 @@ export class WindowBaseDOM {
         type?:string        
     }){
         
+        config.type ??= 'crud'
         this.cleanGlobalWindow()
     
         this.ruculaWindow.classList.add("r-w");
         this.ruculaWindow.classList.add(`${this.P}r-w`);
 
-        const actions = this.leftGrid();
+        const actions = this.leftGrid(config.type);
         this.ruculaWindow.appendChild(actions)
         config.globalWindow?.appendChild(this.ruculaWindow);
 
@@ -49,6 +50,8 @@ export class WindowBaseDOM {
         this.openCloseForm()
         this.closeLeftGrid(config.openLeftGrid)
         this.createNameWindow(config.windowName)
+        this.userProfile()
+        this.message()
         
     }
 
@@ -111,11 +114,11 @@ export class WindowBaseDOM {
 
     }
     
-    private leftGrid(){
+    private leftGrid(type:string){
+
         const actions = document.createElement("div");
         actions.className = "r-left-block"
         actions.id = `${this.P}r-left-block`
-
 
         const ACTIONS =`
             <div class="r-box-show" id="${this.P}r-box-show">
@@ -128,32 +131,7 @@ export class WindowBaseDOM {
                     </div>
                     <button id="${this.P}r-a-many" class="r-a-b"><i class="bi bi-list"></i></button>
                 </div>
-                <div class="r-left-block-grid" id="${this.P}w-grid">
-                    <form class="searh-items-grid" id="${this.P}${constPagination.FIND}" autocomplete=off>
-                        <input name="r-find-value" type="text"/>
-                        <button><i class="bi bi-search"></i></button>
-                    </form>
-                    <div class="r-act-grid-body">
-                    </div>
-                    <div class="r-act-grid-footer" id="${this.P}r-act-grid-footer">
-                        <div>
-                            <span>N. Linha</span>
-                            <select id="${this.P}${constPagination.ROW_NUMBER}" name="len-page">
-                                <option value="10">10</option>
-                                <option value="25">25</option>
-                                <option value="50">50</option>
-                                <option value="100">100</option>
-                                <option value="1000">1000</option>
-                            </select>
-                        </div>
-                         <div>
-                            <button id="${this.P}${constPagination.FIRST}" class="r-a-b"><i class="bi bi-arrow-up"></i></button>
-                            <button id="${this.P}${constPagination.LAST}" class="r-a-b"><i class="bi bi-arrow-down"></i></button>
-                            <button id="${this.P}${constPagination.PREVIOUS}" class="r-a-b"><i class="bi bi-arrow-left"></i></button>
-                            <button id="${this.P}${constPagination.NEXT}" class="r-a-b"><i class="bi bi-arrow-right"></i></button>
-                        </div>
-                    </div>
-                </div>
+                ${ type == 'crud' ? this.grid() : ''}
              </div>`
 
         actions.innerHTML = ACTIONS;
@@ -161,9 +139,54 @@ export class WindowBaseDOM {
         return actions.cloneNode(true);
     }
 
+    grid():string {
+        return `                
+        <div class="r-left-block-grid" id="${this.P}w-grid">
+            <form class="searh-items-grid" id="${this.P}${constPagination.FIND}" autocomplete=off>
+                <input name="r-find-value" type="text"/>
+                <button><i class="bi bi-search"></i></button>
+            </form>
+            <div class="r-act-grid-body">
+            </div>
+            <div class="r-act-grid-footer" id="${this.P}r-act-grid-footer">
+                <div>
+                    <span>N. Linha</span>
+                    <select id="${this.P}${constPagination.ROW_NUMBER}" name="len-page">
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                        <option value="1000">1000</option>
+                    </select>
+                </div>
+                    <div>
+                    <button id="${this.P}${constPagination.FIRST}" class="r-a-b"><i class="bi bi-arrow-up"></i></button>
+                    <button id="${this.P}${constPagination.LAST}" class="r-a-b"><i class="bi bi-arrow-down"></i></button>
+                    <button id="${this.P}${constPagination.PREVIOUS}" class="r-a-b"><i class="bi bi-arrow-left"></i></button>
+                    <button id="${this.P}${constPagination.NEXT}" class="r-a-b"><i class="bi bi-arrow-right"></i></button>
+                </div>
+            </div>
+        </div>`
+    }
+
     private createMold(type?:string){
 
-        type ??= 'crud'
+        var body = ''
+ 
+        switch (type) {
+            case 'crud':
+                body = this.bodyForm()
+                break;
+            case 'grid':
+                body = this.grid()
+            break
+            case 'header':
+                body = ''
+            break;
+                default:
+                body = this.bodyForm()
+                break;
+        }
 
         const contentForm = document.createElement("div");
 
@@ -213,7 +236,7 @@ export class WindowBaseDOM {
             </div>
 
             <div class="r-w-body">
-                ${type == 'crud' ? this.bodyForm() : '' }
+                ${body}
             </div>
             <div class="r-facede-action bottom">
             </div>
@@ -344,6 +367,28 @@ export class WindowBaseDOM {
             else{
                 document.cookie = "theme=light"
             }
+        })
+    }
+
+    userProfile(){
+
+        const user = `${this.P}${constIdBaseWindow.USER}`
+        
+        let evt = new Event(user)
+
+        document.getElementById(user)?.addEventListener('click', () => {
+            this.globalWindow.dispatchEvent(evt)
+        })
+    }
+
+    message(){
+
+        const chat = `${this.P}${constIdBaseWindow.CHAT}`
+        
+        let evt = new Event(chat)
+
+        document.getElementById(chat)?.addEventListener('click', () => {
+            this.globalWindow.dispatchEvent(evt)
         })
     }
 
