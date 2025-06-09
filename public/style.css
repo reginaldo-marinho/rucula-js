@@ -142,6 +142,7 @@ button.r-actions-window {
     flex-direction: column;
     padding: 10px;
     height: 100%;
+    width: 100%;
 }
 
 .r-act-grid-body {
