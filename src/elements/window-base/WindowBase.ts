@@ -52,6 +52,7 @@ export class WindowBaseDOM {
         this.createNameWindow(config.windowName)
         this.userProfile()
         this.message()
+        this.home()
         
     }
 
@@ -193,6 +194,9 @@ export class WindowBaseDOM {
         const CREATE_OR_EDIT =
         `<div class="container-r-f  box-home ${this.P}js-open-close-container">
             <div class="r-act-opt r-head" id="${this.P}w-title">
+                <div class="r-display-inline-block">
+                    <button id="${this.P}${constIdBaseWindow.HOME}" class="r-a-b r-background-theme-itens r-home"><i class="bi bi-grid"></i></button>
+                </div>
             </div>
             <div class="r-f-items r-f-home">
                 <div class="r-f-home-round">
@@ -210,6 +214,7 @@ export class WindowBaseDOM {
                     <button id="${this.P}${constIdBaseWindow.ACTIONS_WINDOW}" class="r-a-b r-actions-window"><i class="bi bi-nut"></i></button>
                     <div class="r-display-inline-block r-actions-window r-actions-window-itens">
                         <div class="r-display-inline-block">
+                            <button id="${this.P}${constIdBaseWindow.HOME}" class="r-a-b r-background-theme-itens r-home"><i class="bi bi-grid"></i></button>
                             <button id="${this.P}${constIdBaseWindow.MAXIMIZE_WINDOW}" class="r-a-b open-box-frame"><i class="bi bi-arrows"></i></button>
                             <button id="${this.P}${constIdBaseWindow.MAXIMIZE_GRID}" class="r-a-b open-grid r-mobile"><i class="bi bi-grid-3x3-gap-fill"></i></button>
                             <button id="${this.P}${constIdBaseWindow.ALTER_THEME}" class="r-a-b "><i class="bi bi-circle-half"></i></button>
@@ -379,6 +384,17 @@ export class WindowBaseDOM {
         document.getElementById(user)?.addEventListener('click', () => {
             this.globalWindow.dispatchEvent(evt)
         })
+    }
+
+     home(){
+
+        const home = `${this.P}${constIdBaseWindow.HOME}`
+        
+        let evt = new Event(home)
+
+        document.querySelectorAll('.r-home')?.forEach(b => b.addEventListener('click', () => {
+            this.globalWindow.dispatchEvent(evt)
+        }))
     }
 
     message(){

@@ -11,15 +11,16 @@
     --bgc-r-facede-action: #fafafa;
     --bgc-r-w: #f1f1f1;
     --bgc-frames: #fff;
+    --bgc-item-green: #00c076;
     --color-icons-action: #211e1e;
     --heigth-r-facede-action: 60px;
+    
 
     --color-border-default: #343540;
     --color-input-focus: #096a9b;
     --color-default: black;
     --color-text-defaut: #393939;
     --color-border-facede-action: #d5d5d5;
-
 }
 
 .r-w.dark-theme {
@@ -1104,4 +1105,13 @@ input:-internal-autofill-selected {
 
 .r-color-Purple {
     color: #800080;
+}
+
+.r-background-theme-itens {
+    background-color: var(--bgc-item-green);
+}
+
+.r-home{
+    padding: 10px;
+    border-radius: 4px;
 }
