@@ -25,9 +25,11 @@ export class DOMButtonsCheck {
         this.buttonsPlus = document.getElementById(`${this.P}${constIdBaseWindow.BUTTONS_MENU_VERTICAL}`) as HTMLButtonElement
         this.olButtonsPlus = document.getElementById(`${this.P}${constIdBaseWindow.BUTTONS_MENU_VERTICAL_LIST}`) as HTMLOListElement     
 
-        if(this.olButtonsPlus.querySelectorAll("button,a").length == 0){
-            this.buttonsPlus.remove();
-            this.olButtonsPlus.remove()
+        const countButtons = this.olButtonsPlus?.querySelectorAll("button,a")?.length
+
+        if( countButtons === 0 || countButtons === undefined){
+            this.buttonsPlus?.remove();
+            this.olButtonsPlus?.remove()
         }
     }
 
