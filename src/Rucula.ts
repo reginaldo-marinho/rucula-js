@@ -1,6 +1,6 @@
 import { window } from "./entities/form/window";
 import { WindowBaseDOM } from "./elements/window-base/WindowBase";
-import { constIdBaseWindow, constTypeFrame } from "./const";
+import { constIdBaseWindow, constTypeFrame, eventIstance, eventsName } from "./const";
 import { EventButton } from "./buttons/EventButton";
 import { configWindow } from "./window/Window";
 import { defaultValues } from "./elements/Defaults";
@@ -57,7 +57,9 @@ export class Rucula{
     public loader!:LoaderManagment
     public buttonManaged!:ButtonManaged
     private perspective?: Perspective
-     
+    public EN = eventsName
+    private evInstance = eventIstance(this.P)
+    
     constructor(config: {
         global:globalConfiguration, 
         urlWindow?:buttonURL,
@@ -136,11 +138,8 @@ export class Rucula{
     }
     
     create(){
-                
-        let eventInit = new Event('rucula.init')
-        let eventLoad = new Event('rucula.load')
-        
-        this.globalWindow.dispatchEvent(eventInit)
+
+        this.globalWindow.dispatchEvent(this.evInstance.RUCULA_CREATE_INIT)
         configWindow.set(this.window, this.P)
         this.menuContext.init()
         this.fieldMenuContext.init()
@@ -169,7 +168,7 @@ export class Rucula{
             this.createFrames()
         }
 
-        this.globalWindow.dispatchEvent(eventLoad);
+        this.globalWindow.dispatchEvent(this.evInstance.RUCULA_CREATE_LOADED);
         
         (window as any).rucula = new RuculaLogs(this.managmentObject)
 
@@ -179,6 +178,7 @@ export class Rucula{
         this.event.on('erase-window',() => {
             this.buttonManaged.disableAll()
             this.revertToinit()
+            this.globalWindow.dispatchEvent(this.evInstance.FRAMES_ERASE_COMPLETE);
         })
     }
 
@@ -372,8 +372,15 @@ export class Rucula{
 
                 frame.fields?.splice(indexof!,1)
             }
+        
         }
-    }
+
+        public UUID(){
+        return self.crypto.randomUUID()
+    } 
+}
+
+    
 
 export type Perspective = {
     frame:string[],

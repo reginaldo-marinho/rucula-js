@@ -1,23 +1,6 @@
+import { P } from "./common/Prefixe";
+
 export const DOT_SEPARATOR = ".";
-
-export const eventRucula = {
-
-    RESET_BACKGROUND:"reset-background",
-    RESET_BACKGROUND_EVENT: new Event("reset-background"),
-
-    BEFORE_SEND_OBJECT_HTTP:"before-send-object-http",
-    EVENT_BEFORE_SEND_OBJECT_HTTP: new Event("before-send-object-http"),
-
-    AFTER_SEND_OBJECT_HTTP:"after-send-object-http",
-    EVENT_AFTER_SEND_OBJECT_HTTP: new Event("after-send-object-http"),
-
-    SEND_OBJECT_HTTP_OK:"send-object-http-ok",
-    EVENT_SEND_OBJECT_HTTP_OK: new Event("send-object-http-ok"),
-
-    SEND_OBJECT_HTTP_ERROR:"send-object-http-error",
-    EVENT_SEND_OBJECT_HTTP_ERROR: new Event("send-object-http-error")
-
-}
 
 export const constPrefixEventField = {
     BEFORE:'before',
@@ -61,6 +44,7 @@ export const constIdBaseWindow =  {
     ERASE_WINDOW: "erase-window",
     ALTER_THEME: "alter-theme",
     MAXIMIZE_WINDOW: "maximize-window",
+    HOME: "home",
     MAXIMIZE_GRID: "maximize-grid",
     ACTIONS_WINDOW: "r-actiond-window",
     GLOBALIZATION: "r-globalization",
@@ -116,4 +100,22 @@ export const constPagination = {
     LAST:"r-pagination-last",
     PREVIOUS:"r-pagination-previous",
     NEXT:"r-pagination-next"
+}
+
+export const eventsName = {
+    RUCULA_CREATE_INIT:'rucula-init',
+    RUCULA_CREATE_LOADED:'rucula-loaded',  
+    FRAMES_ERASE:'fremes-erase',  
+    FRAMES_ERASE_COMPLETE:'fremes-erase-complete',  
+}
+
+export function eventIstance(prefix:string){
+    return {
+        RUCULA_CREATE_INIT: new Event(P(prefix,eventsName.RUCULA_CREATE_INIT)),
+        RUCULA_CREATE_LOADED: new Event(P(prefix,eventsName.RUCULA_CREATE_LOADED)),
+        FRAMES_ERASE: new Event(P(prefix,eventsName.FRAMES_ERASE)),
+        FRAMES_ERASE_COMPLETE: new Event(P(prefix,eventsName.FRAMES_ERASE_COMPLETE)),
+        ERASE_WINDOW: new Event(P(prefix,constIdBaseWindow.ERASE_WINDOW)),
+
+    }
 }

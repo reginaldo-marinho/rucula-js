@@ -1,11 +1,12 @@
 import { cookie } from "../../common/coockie";
-import { constIdBaseWindow, constPagination } from "../../const";
+import { constIdBaseWindow, constPagination, eventIstance } from "../../const";
 
 export class WindowBaseDOM {
 
     private P:string
     private ruculaWindow = document.createElement("div");
     private globalWindow:HTMLElement
+    private evIstance
 
     constructor(prefix:string, config: {
         globalWindow:HTMLElement,
@@ -14,6 +15,7 @@ export class WindowBaseDOM {
         type?:string
     }){
         this.P = prefix
+        this.evIstance = eventIstance(this.P)
         this.globalWindow = config.globalWindow
         
         if(config.type === 'header'){
@@ -326,12 +328,8 @@ export class WindowBaseDOM {
 
     eraseForm(){
 
-        const eraseWindow = `${this.P}${constIdBaseWindow.ERASE_WINDOW}`
-        
-        let evt = new Event(eraseWindow)
-        
-        document.getElementById(eraseWindow)?.addEventListener('click', () => {
-            this.globalWindow.dispatchEvent(evt)
+        document.getElementById(`${this.P}${constIdBaseWindow.ERASE_WINDOW}`)?.addEventListener('click', () => {
+            this.globalWindow.dispatchEvent(this.evIstance.ERASE_WINDOW)
         })
     }
 
