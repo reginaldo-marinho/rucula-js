@@ -19,11 +19,12 @@
         <div id="js">
         </div>
 
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rucula-js/rucula-js@master/dist/style/style.css"/>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/reginaldo-marinho/rucula-js@desenv/dist/style/normalize.css"/>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/reginaldo-marinho/rucula-js@desenv/dist/style/style.css"/>
 
         <script type="module" >
             
-            import {Rucula} from 'https://cdn.jsdelivr.net/gh/rucula-js/rucula-js@master/dist/Rucula.js'
+            import {Rucula} from 'https://cdn.jsdelivr.net/npm/@reginaldo-marinho/rucula-js/dist/Rucula.js'
             
             let config = {
                 floatLabel:true, 
@@ -44,7 +45,6 @@
                 ] 
             }   
 
-            
             const ordemDeServico = {
             name: "Ordem de Serviço",
             pathController: "/OrdemServico",
@@ -58,6 +58,7 @@
                 name: "Header OS",
                 objectDto: "ordemDeServico",
                 alias: "ordemDeServico",
+                vertical: false,
                 fields: [
                     {
                     propertDto: "codigo",
@@ -89,12 +90,6 @@
                     },
                     groupFormat: "right",
                     value: false
-                    },
-                    {
-                    propertDto: "infIni",
-                    description: "Informações Iniciais",
-                    type: "textarea",
-                    maxLength: 150
                     }
                 ]
                 },
@@ -118,50 +113,6 @@
                     propertDto: "email",
                     description: "Email",
                     maxLength: 150
-                    }
-                ]
-                },
-                {
-                name: "Cliente - Endereço",
-                objectDto: "endereco",
-                alias: "endereco",
-                parent: ".",
-                fields: [
-                    {
-                    propertDto: "cep",
-                    description: "CEP",
-                    maxLength: 9
-                    },
-                    {
-                    propertDto: "logradouro",
-                    description: "Logradouro",
-                    maxLength: 150
-                    },
-                    {
-                    propertDto: "complemento",
-                    description: "Complemento",
-                    information: "",
-                    maxLength: 20
-                    },
-                    {
-                    propertDto: "bairro",
-                    description: "Bairro",
-                    maxLength: 30
-                    },
-                    {
-                    propertDto: "cidade",
-                    description: "Cidade",
-                    maxLength: 40
-                    },
-                    {
-                    propertDto: "estado",
-                    description: "Estado",
-                    maxLength: 30
-                    },
-                    {
-                    propertDto: "pais",
-                    description: "País",
-                    maxLength: 50
                     }
                 ]
                 },
@@ -196,61 +147,13 @@
                     maxLength: 50
                     }
                 ]
-                },
-                {
-                name: "🧑‍🔧 Técnico Responsavel",
-                objectDto: "tecnicoResponsavel",
-                alias: "tecnicoResponsavel",
-                parent: ".",
-                fields: [
-                    {
-                    propertDto: "nome",
-                    description: "Nome",
-                    maxLength: 100
-                    },
-                    {
-                    propertDto: "telefone",
-                    description: "Telefone",
-                    maxLength: 15
-                    },
-                    {
-                    propertDto: "email",
-                    description: "Email",
-                    maxLength: 100
-                    }
-                ]
-                },
-                {
-                name: "💵 Pagamento",
-                objectDto: "pagamento",
-                alias: "pagamento",
-                parent: ".",
-                fields: [
-                    {
-                    propertDto: "formaDePagamento",
-                    description: "Forma de Pagamento",
-                    maxLength: 100
-                    },
-                    {
-                    propertDto: "valorTotalPago",
-                    description: "Valor Total Pago",
-                    type: "currency"
-                    },
-                    {
-                    propertDto: "dataPagamento",
-                    description: "Data de Pagamento",
-                    type: "date"
-                    }
-                ]
                 }
             ],
             layout: {
                 items: [
-                ["ordemDeServico", "ordemDeServico", "ordemDeServico"],
-                ["cliente", "cliente", "cliente"],
-                ["endereco", "", "endereco"],
-                ["itensServico", "itensServico", "itensServico"],
-                ["tecnicoResponsavel", "tecnicoResponsavel", "pagamento"]
+                ["ordemDeServico", ],
+                ["cliente", ],
+                ["itensServico"],
                 ]
             },
             button: [
@@ -293,12 +196,21 @@
 
             var form = document.getElementById("js")
 
-            let rucula = new Rucula(config,ordemDeServico,"js");
+            let rucula = new Rucula({
+                global: config,
+                window: ordemDeServico,
+                id: "js"
+            });
             
             form?.addEventListener('r-a-delete',(e) => {
                 rucula.loader.enable()
                 rucula.loader.disable()
             })
+
+
+            await rucula.init();
+            rucula.create();
+
 
             rucula.popup.messsage.warning({text:"Esse projeto encontra-se em fase de Desenvolvimento"});
 
