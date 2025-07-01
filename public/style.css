@@ -1111,7 +1111,7 @@ input:-internal-autofill-selected {
     background-color: var(--bgc-item-green);
 }
 
-.r-home{
+.r-b-header-icon {
     padding: 10px;
     border-radius: 4px;
 }
