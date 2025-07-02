@@ -52,10 +52,11 @@ export class WindowBaseDOM {
         this.openCloseForm()
         this.closeLeftGrid(config.openLeftGrid)
         this.createNameWindow(config.windowName)
-        this.userProfile()
-        this.message()
-        this.home()
-        
+        this.setEventClickById(constIdBaseWindow.USER, constIdBaseWindow.USER)
+        this.setEventClickById(constIdBaseWindow.CHAT, constIdBaseWindow.CHAT)
+        this.setEventClickQuerySelectorAll(constIdBaseWindow.HOME, `#${this.P}${constIdBaseWindow.HOME}`)   
+        this.setEventClickQuerySelectorAll(constIdBaseWindow.PAGE_LEFT, `#${this.P}${constIdBaseWindow.PAGE_LEFT}`)   
+        this.setEventClickQuerySelectorAll(constIdBaseWindow.PAGE_RIGHT, `#${this.P}${constIdBaseWindow.PAGE_RIGHT}`)   
     }
 
     private widthAndHeigth(){
@@ -197,7 +198,9 @@ export class WindowBaseDOM {
         `<div class="container-r-f  box-home ${this.P}js-open-close-container">
             <div class="r-act-opt r-head" id="${this.P}w-title">
                 <div class="r-display-inline-block">
-                    <button id="${this.P}${constIdBaseWindow.HOME}" class="r-a-b r-background-theme-itens r-home"><i class="bi bi-grid"></i></button>
+                    <button id="${this.P}${constIdBaseWindow.HOME}" class="r-a-b r-background-theme-itens r-b-header-icon"><i class="bi bi-house"></i></button>
+                    <button id="${this.P}${constIdBaseWindow.PAGE_LEFT}" class="r-a-b r-background-theme-itens r-b-header-icon"><i class="bi bi-arrow-left"></i></button>
+                    <button id="${this.P}${constIdBaseWindow.PAGE_RIGHT}" class="r-a-b r-background-theme-itens r-b-header-icon"><i class="bi bi-arrow-right"></i></button>
                 </div>
             </div>
             <div class="r-f-items r-f-home">
@@ -216,8 +219,10 @@ export class WindowBaseDOM {
                     <button id="${this.P}${constIdBaseWindow.ACTIONS_WINDOW}" class="r-a-b r-actions-window"><i class="bi bi-nut"></i></button>
                     <div class="r-display-inline-block r-actions-window r-actions-window-itens">
                         <div class="r-display-inline-block">
-                            <button id="${this.P}${constIdBaseWindow.HOME}" class="r-a-b r-background-theme-itens r-home"><i class="bi bi-grid"></i></button>
-                            <button id="${this.P}${constIdBaseWindow.MAXIMIZE_WINDOW}" class="r-a-b open-box-frame"><i class="bi bi-arrows"></i></button>
+                            <button id="${this.P}${constIdBaseWindow.HOME}" class="r-a-b r-background-theme-itens r-b-header-icon"><i class="bi bi-house"></i></button>
+                            <button id="${this.P}${constIdBaseWindow.PAGE_LEFT}" class="r-a-b r-background-theme-itens r-b-header-icon"><i class="bi bi-arrow-left"></i></button>
+                            <button id="${this.P}${constIdBaseWindow.PAGE_RIGHT}" class="r-a-b r-background-theme-itens r-b-header-icon"><i class="bi bi-arrow-right"></i></button>
+                            <button id="${this.P}${constIdBaseWindow.MAXIMIZE_WINDOW}" class="r-a-b open-box-frame"><i class="bi bi-fullscreen"></i></button>
                             <button id="${this.P}${constIdBaseWindow.MAXIMIZE_GRID}" class="r-a-b open-grid r-mobile"><i class="bi bi-grid-3x3-gap-fill"></i></button>
                             <button id="${this.P}${constIdBaseWindow.ALTER_THEME}" class="r-a-b "><i class="bi bi-circle-half"></i></button>
                         </div>
@@ -310,9 +315,13 @@ export class WindowBaseDOM {
 
         let buttonMaximizeWindow = document.getElementById(`${this.P}${constIdBaseWindow.MAXIMIZE_WINDOW}`);
         
-        buttonMaximizeWindow?.addEventListener('click',() => {
+        buttonMaximizeWindow?.addEventListener('click',(e) => {
             let actions = document.getElementById(`${this.P}actions`);
             actions?.classList.toggle("r-close-grid");
+            
+            let icon = buttonMaximizeWindow?.querySelector('i') as HTMLElement 
+            icon?.classList.toggle("bi-fullscreen"); // icon bootstrap
+            icon?.classList.toggle("bi-fullscreen-exit"); // icon bootstrap
         })
         
         let buttonMaximizeGrid = document.getElementById(`${this.P}${constIdBaseWindow.MAXIMIZE_GRID}`);
@@ -327,7 +336,7 @@ export class WindowBaseDOM {
     }
 
     eraseForm(){
-
+        
         document.getElementById(`${this.P}${constIdBaseWindow.ERASE_WINDOW}`)?.addEventListener('click', () => {
             this.globalWindow.dispatchEvent(this.evIstance.ERASE_WINDOW)
         })
@@ -373,38 +382,28 @@ export class WindowBaseDOM {
         })
     }
 
-    userProfile(){
+    private setEventClickQuerySelectorAll(eventName:string, selector:string){
 
-        const user = `${this.P}${constIdBaseWindow.USER}`
-        
-        let evt = new Event(user)
+        const evtName = `${this.P}${eventName}`
+        let evt = new Event(evtName)
 
-        document.getElementById(user)?.addEventListener('click', () => {
-            this.globalWindow.dispatchEvent(evt)
+        document.querySelectorAll(selector)?.forEach(e => {
+            e.addEventListener('click', () => {
+                this.globalWindow.dispatchEvent(evt)
+            })
         })
     }
 
-     home(){
+     private setEventClickById(eventName:string, id:string){
 
-        const home = `${this.P}${constIdBaseWindow.HOME}`
-        
-        let evt = new Event(home)
+        const evtName = `${this.P}${eventName}`
+        let evt = new Event(evtName)
 
-        document.querySelectorAll('.r-home')?.forEach(b => b.addEventListener('click', () => {
-            this.globalWindow.dispatchEvent(evt)
-        }))
-    }
-
-    message(){
-
-        const chat = `${this.P}${constIdBaseWindow.CHAT}`
-        
-        let evt = new Event(chat)
-
-        document.getElementById(chat)?.addEventListener('click', () => {
+        document.getElementById(`${this.P}${id}`)?.addEventListener('click', () => {
             this.globalWindow.dispatchEvent(evt)
         })
     }
+    
 
     getPrincipalElementRucula(){
         return document.getElementById(`${this.P}${constIdBaseWindow.FORM_RUCULA_JS}`) as HTMLFormElement

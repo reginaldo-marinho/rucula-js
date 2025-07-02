@@ -45,6 +45,8 @@ export const constIdBaseWindow =  {
     ALTER_THEME: "alter-theme",
     MAXIMIZE_WINDOW: "maximize-window",
     HOME: "home",
+    PAGE_LEFT: "page-left",
+    PAGE_RIGHT: "page-right",
     MAXIMIZE_GRID: "maximize-grid",
     ACTIONS_WINDOW: "r-actiond-window",
     GLOBALIZATION: "r-globalization",
