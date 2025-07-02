@@ -125,7 +125,6 @@ button.r-actions-window {
 .r-close-grid {
     width: 0 !important;
     overflow: hidden;
-    transition: width 0.6s ease;
 }
 
 .r-w-t h2,
@@ -351,7 +350,6 @@ input.r-i-focus-dependency {
     width: 500px;
     height: calc(100% - var(--heigth-r-facede-action));
     max-width: 500px;
-    transition: width 0.6s ease;
 }
 
 .r-head {
