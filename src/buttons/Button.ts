@@ -144,11 +144,12 @@ export class  Button  {
     prepareButtonsInLeftBox (button:button[]) {
             
         const ListRightButtons = document.getElementById(`${this.P}${constIdBaseWindow.BUTTONS_MENU_VERTICAL_LIST}`)
-
+        
         let buttons = button?.filter(c=> this.buttonIsNotDefault(c.target))
         
         if(buttons?.length == 0 || buttons == undefined){
-            document.querySelector(`.${this.P}r-vertical-actions`)?.classList.add('r-display-none')
+            var verticalActions = document.querySelector(`.r-vertical-actions`)
+            verticalActions?.classList.add('r-display-none')
         }
         
         buttons?.forEach(b => {
