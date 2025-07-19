@@ -55,8 +55,12 @@ export class WindowBaseDOM {
         this.setEventClickById(constIdBaseWindow.USER, constIdBaseWindow.USER)
         this.setEventClickById(constIdBaseWindow.CHAT, constIdBaseWindow.CHAT)
         this.setEventClickQuerySelectorAll(constIdBaseWindow.HOME, `#${this.P}${constIdBaseWindow.HOME}`)   
-        this.setEventClickQuerySelectorAll(constIdBaseWindow.PAGE_LEFT, `#${this.P}${constIdBaseWindow.PAGE_LEFT}`)   
-        this.setEventClickQuerySelectorAll(constIdBaseWindow.PAGE_RIGHT, `#${this.P}${constIdBaseWindow.PAGE_RIGHT}`)   
+        this.setEventClickQuerySelectorAll(constIdBaseWindow.PAGE_LEFT, `#${this.P}${constIdBaseWindow.PAGE_LEFT}`, () => {
+            history.back()
+        })   
+        this.setEventClickQuerySelectorAll(constIdBaseWindow.PAGE_RIGHT, `#${this.P}${constIdBaseWindow.PAGE_RIGHT}`, () => {
+            history.forward()
+        })
     }
 
     private widthAndHeigth(){
@@ -382,13 +386,16 @@ export class WindowBaseDOM {
         })
     }
 
-    private setEventClickQuerySelectorAll(eventName:string, selector:string){
+    private setEventClickQuerySelectorAll(eventName:string, selector:string, callback?:Function){
 
         const evtName = `${this.P}${eventName}`
         let evt = new Event(evtName)
 
         document.querySelectorAll(selector)?.forEach(e => {
             e.addEventListener('click', () => {
+                if(callback){
+                    callback()
+                }
                 this.globalWindow.dispatchEvent(evt)
             })
         })
