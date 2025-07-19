@@ -376,8 +376,16 @@ export class Rucula{
         }
 
         public UUID(){
-        return self.crypto.randomUUID()
-    } 
+            return self.crypto.randomUUID()
+        } 
+        
+        public formOpen(){
+            const ruculaBNew = this.globalWindow.querySelector('.r-a-b.r-btn-new-cancel-close.r-desktop-web');
+            
+            if (ruculaBNew?.classList.contains('r-box-frame-opened') == false) {
+                (ruculaBNew as HTMLButtonElement).click();
+            }
+        }
 }
 
     
