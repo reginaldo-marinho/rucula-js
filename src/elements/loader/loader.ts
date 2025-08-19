@@ -20,7 +20,9 @@ export class LoaderManagment {
     disable (){            
         let loader = document.querySelector(`.${this.P}js-r-loader`) as HTMLDivElement
         this.loaderBkp.appendChild(loader)
-        this.boxShow?.classList.remove('r-box-show-center')
-    
+        
+        if(this.boxShow?.querySelectorAll('div')?.length === 0){
+            this.boxShow?.classList.remove('r-box-show-center')
+        } 
     }
 }

@@ -5,7 +5,6 @@ import { EventButton } from "./buttons/EventButton";
 import { configWindow } from "./window/Window";
 import { defaultValues } from "./elements/Defaults";
 import { LayoutFrame } from "./Layout/layout";
-import { DOMButtonsCheck } from "./buttons/buttonsBaseCrud";
 import { ruculaGlobal } from "./global/GlobalConfig";
 import { LoaderManagment } from "./elements/loader/loader";
 import { Popup } from "./popup/popup";
@@ -26,7 +25,7 @@ import { MenuContext } from "./menu-context/menu-context";
 import { P as prefixe } from "./common/Prefixe";
 import { buttonURL } from "./entities/form/button";
 import { WindowAPI } from "./window/windowAPI";
-import { ButtonManaged } from "./elements/window-base/buttonManaged";
+import { ButtonCrud } from "./elements/window-base/buttonManaged";
 import { globalConfiguration } from "./entities/global/GlobalConfiguration";
 import { frame } from "./entities/form/frame";
 
@@ -51,11 +50,10 @@ export class Rucula{
     private config:any
     private fieldMenuContext!:FieldMenuContext
     private paginationEvents!:PaginationEvents
-    private domButtomCheck!:DOMButtonsCheck
     private frameBlock!:FrameElementBlock
     private frameLine!:FrameElementLine
     public loader!:LoaderManagment
-    public buttonManaged!:ButtonManaged
+    public buttonCrud!:ButtonCrud
     private perspective?: Perspective
     public EN = eventsName
     private evInstance = eventIstance(this.P)
@@ -75,7 +73,7 @@ export class Rucula{
         ruculaGlobal.initGlobalConfiguration(config.global)
     }
 
-    async init(){
+    async init(callbackEditWindow?:any){
 
         if(this.config.urlWindow){    
             
@@ -86,7 +84,11 @@ export class Rucula{
         else{
             this.window = this.config.window
         }
-       
+        
+        if(callbackEditWindow){
+            this.window = callbackEditWindow(this.window, this)
+        }
+
         this.configurePerspective()
 
         this.globalWindow = document.getElementById(this.config.id!)!
@@ -99,8 +101,6 @@ export class Rucula{
         this.fragment = new Fragment(this.tableDependency);
         this.paginationEvents = new PaginationEvents(this.P, this.globalWindow)
         
-        
-        this.domButtomCheck = new DOMButtonsCheck(this.P,this.window?.crud)
         this.loader = new LoaderManagment(this.P)
         this.button = new Button(() => {
             let rucula = new Rucula(this.config)
@@ -147,14 +147,12 @@ export class Rucula{
 
         this.elementFormRucula = this.windowBaseDOM.getPrincipalElementRucula() as HTMLFormElement
 
-        let buttons =  this.globalWindow.querySelectorAll(`#${this.P}action-crud button.managed`) as NodeListOf<HTMLButtonElement>
-
-        this.buttonManaged = new  ButtonManaged(this.P,buttons)
+        this.buttonCrud = new  ButtonCrud(this.P,this.window?.crud,this.globalWindow)
 
         let form = this.globalWindow.querySelector('form.r-window-work')
         
         form?.addEventListener('change',() => {
-            this.buttonManaged.initTosave()
+            this.buttonCrud.initTosave()
         })
 
         this.paginationEvents.headerSearch(this.window.gridSearch);
@@ -163,7 +161,7 @@ export class Rucula{
         this.createButtons()
        
         if(this.window.type == 'crud'){
-            this.domButtomCheck.removeUnusedButtons()
+            this.buttonCrud.removeUnusedButtons()
             this.layoutFrame.configureLayout(this.window,this.elementFormRucula)
             this.createFrames()
         }
@@ -176,7 +174,7 @@ export class Rucula{
         this.fragment.snapshot()
         
         this.event.on('erase-window',() => {
-            this.buttonManaged.disableAll()
+            this.buttonCrud.disableAll()
             this.revertToinit()
             this.globalWindow.dispatchEvent(this.evInstance.FRAMES_ERASE_COMPLETE);
         })
@@ -253,7 +251,7 @@ export class Rucula{
     }
 
     public url (URL:buttonURL) {
-        return new URLRucula(this.managmentObject, URL);
+        return new URLRucula(this?.managmentObject, URL);
     } 
     
     objectUnique (alias:string) {

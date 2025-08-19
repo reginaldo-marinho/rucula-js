@@ -77,8 +77,10 @@
     bottom: 0;
     width: 100%;
     height: 100%;
-    z-index: 10;
+    z-index: 11 ;
     padding: 0 20px;
+    background:  #ffffff57;
+    cursor: not-allowed;
 }
 
 .r-item-center {
@@ -135,6 +137,7 @@ button.r-actions-window {
 .r-w-t {
     font-weight: bold;
     color: var(--color-default);
+    text-align: center;
 }
 
 .r-left-block-grid {
@@ -347,11 +350,11 @@ input.r-i-focus-dependency {
 }
 
 .r-act {
-    width: 500px;
     height: calc(100% - var(--heigth-r-facede-action));
-    max-width: 500px;
 }
-
+.r-width-left-box {
+    width: 500px;
+}
 .r-head {
     background-color: var(--bgc-frames);
 }
@@ -638,12 +641,13 @@ input.r-i-focus-dependency {
 
 .r-message {
     padding: 30px 10px 10px 10px;
-    width: 300px;
+    width: 250px;
     background-color: var(--bgc-frames);
     border-radius: 10px;
     box-shadow: 0px 0px 2px var(--color-border-default);
     z-index: 200;
-
+    position: absolute;
+    cursor: default;
 }
 
 .r-message-header {
@@ -721,7 +725,6 @@ input.r-i-focus-dependency {
 /* Loader INI */
 
 .r-loader {
-
     position: absolute;
     border: 6px solid var(--color-black);
     border-radius: 50%;
@@ -736,6 +739,8 @@ input.r-i-focus-dependency {
     left: 0;
     right: 0;
     bottom: 0;
+    z-index: 199;
+    cursor: progress;
 }
 
 
@@ -1112,4 +1117,65 @@ input:-internal-autofill-selected {
 .r-b-header-icon {
     padding: 10px;
     border-radius: 4px;
+}
+
+.alert {
+    padding: 1rem;
+    border: 1px solid;
+    border-radius: 0.5rem;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    font-family: sans-serif;
+    display: flex;
+    height: fit-content;
+}
+
+.alert-success {
+    background-color: #d1fae5;
+    border-color: #34d399;
+    color: #065f46;
+}
+
+.alert-warning {
+    background-color: #fef3c7;
+    border-color: #facc15;
+    color: #92400e;
+}
+
+.alert-error {
+    background-color: #fee2e2;
+    border-color: #f87171;
+    color: #991b1b;
+}
+
+.alert-info {
+    background-color: #dbeafe;
+    border-color: #3b82f6;
+    color: #1e40af;
+}
+
+.alert-neutral {
+    background-color: #f3f4f6;
+    border-color: #9ca3af;
+    color: #374151;
+}
+
+.alert strong {
+    font-weight: bold;
+    margin-right: 0.5rem;
+}
+
+.alert span {
+    display: inline-block;
+}
+
+.alert-close {
+    right: 0;
+    margin-left: auto;
+    background: none;
+    border: none;
+    font-size: 1rem;
+    font-weight: bold;
+    color: inherit;
+    cursor: pointer;
 }

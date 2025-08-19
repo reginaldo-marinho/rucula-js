@@ -42,7 +42,7 @@ export class WindowBaseDOM {
         this.ruculaWindow.appendChild(actions)
         config.globalWindow?.appendChild(this.ruculaWindow);
 
-        this.createMold(config.type)
+        this.createMold(config.type,config.openLeftGrid)
         this.alterTheme()
         this.eraseForm()
         this.openActionswindow()
@@ -131,7 +131,7 @@ export class WindowBaseDOM {
         const ACTIONS =`
             <div class="r-box-show" id="${this.P}r-box-show">
             </div>
-            <div class="r-act" id="${this.P}actions">
+            <div class="r-act r-width-left-box" id="${this.P}actions">
                 <div class="r-act-opt r-head" id="${this.P}w-title">
                     <button id="${this.P}${constIdBaseWindow.NEW}" class="r-a-b r-btn-new-cancel-close r-desktop-web"><i class="bi bi-plus-lg"></i></button>
                     <button id="${this.P}${constIdBaseWindow.CLOSE_GRID}" class="r-a-b r-btn-new-cancel-close r-mobile"><i class="bi bi-x-lg"></i></button>
@@ -177,7 +177,8 @@ export class WindowBaseDOM {
         </div>`
     }
 
-    private createMold(type?:string){
+
+    private createMold(type:string, openLeftGrid=true){
 
         var body = ''
  
@@ -220,6 +221,7 @@ export class WindowBaseDOM {
             <div class="r-head r-read-new r-facede-action top">
 
                 <div style="z-index: 10;">
+                    ${this.headerWithWindowName(type, openLeftGrid) ? this.setSimpleHeaderTitle() : ''} 
                     <button id="${this.P}${constIdBaseWindow.ACTIONS_WINDOW}" class="r-a-b r-actions-window"><i class="bi bi-nut"></i></button>
                     <div class="r-display-inline-block r-actions-window r-actions-window-itens">
                         <div class="r-display-inline-block">
@@ -262,9 +264,21 @@ export class WindowBaseDOM {
 
         this.ruculaWindow.appendChild(contentForm.childNodes[0] as HTMLDivElement)
         this.ruculaWindow.appendChild(contentForm.childNodes[1] as HTMLDivElement)
-
     }
 
+    private setSimpleHeaderTitle(){
+        return `
+            <div class="r-width-left-box r-display-inline-block"> 
+                <div class="r-w-t">
+                </div>
+            </div>
+        `
+    }
+
+    headerWithWindowName(type:string, openLeftGrid:boolean = false){
+        return type == 'header' ||  openLeftGrid == false; 
+    }
+    
     private bodyForm(){
 
 

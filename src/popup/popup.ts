@@ -125,7 +125,10 @@ export class Popup {
     }
 
     close(){
-        this.boxShow.classList.remove('r-box-show-center')
+        
+        if(this.boxShow?.querySelectorAll('div')?.length === 0){
+            this.boxShow?.classList.remove('r-box-show-center')
+        } 
     }
 
     info(config: configCommon, callback?:callbackYesNo){
@@ -226,4 +229,58 @@ export class Popup {
 
         this.boxShowAppendChield(warning)
     }
+
+    alertSuccess(message:string, target:HTMLElement, timerSeconds:number=0) {
+        this.elementaAlert('success','Sucesso!', message, target, timerSeconds) 
+    }
+
+    alertWarning(message:string, target:HTMLElement, timerSeconds:number=0) {
+        this.elementaAlert('warning','Atenção!', message, target, timerSeconds)
+    }
+
+    alertInfo(message:string, target:HTMLElement, timerSeconds:number=0) {
+        this.elementaAlert('info','Informação:', message, target, timerSeconds)
+    }
+
+    alertError(message:string, target:HTMLElement, timerSeconds:number=0) {
+        this.elementaAlert('error','Erro!', message, target, timerSeconds)
+    }
+
+    alertNeutral(message:string, target:HTMLElement, timerSeconds:number=0) {
+        this.elementaAlert('neutral','Nota:', message, target, timerSeconds)
+    }
+
+    private elementaAlert(type:string, title:string, message:string, target:HTMLElement, timerSeconds:number=0){
+
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type}`;
+
+            const closeButton = document.createElement('button');
+            closeButton.textContent = '✖';
+            closeButton.className = 'alert-close';
+            closeButton.title = 'Fechar';
+
+            closeButton.addEventListener('click', () => {
+                alertDiv.remove();
+            });
+
+        if(timerSeconds){
+            setTimeout(() => {
+                alertDiv.remove();
+            },timerSeconds * 1000)
+        }
+        const strong = document.createElement('strong');
+        strong.textContent = title;
+
+        const span = document.createElement('span');
+        span.textContent = message;
+
+        alertDiv.appendChild(strong);
+        alertDiv.appendChild(span);
+        alertDiv.appendChild(closeButton);
+
+        target.appendChild(alertDiv)
+    }
 }
+
+(window as any).ruculaPopup = new Popup("")
