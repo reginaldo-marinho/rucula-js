@@ -130,7 +130,7 @@ export class Rucula{
         
         this.managmentObject = new ManagmentObject(this.fragment, this.tableDependency,this.window.frames);
         this.event = new EventManagment(this.P, this.managmentObject,this.globalWindow);
-        this.field = new Field(this.managmentObject, this.globalWindow)
+        this.field = new Field(this.P,this.managmentObject, this.globalWindow)
         this.eventButton = new EventButton(this.field, this.managmentObject,this.P)
         this.frameEvent = new FrameEvent(this.managmentObject)
         this.frameBlock = new FrameElementBlock(this.managmentObject,this.field, this.frameEvent, this.button, this.fieldMenuContext);

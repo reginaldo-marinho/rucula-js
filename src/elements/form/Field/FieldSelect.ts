@@ -2,7 +2,7 @@ import { FieldInput } from "./FieldInput";
 import { FileEventSelect } from "./event/FileEventSelect";
 
 export class FieldSelect extends FieldInput{
-    
+
     create() {
 
         const select = document.createElement('select');
@@ -37,6 +37,6 @@ export class FieldSelect extends FieldInput{
     }
 
     protected setEvents(): void {
-        new FileEventSelect(this.managmentObject, this.input, this.field, this.ruculaForm)
+        new FileEventSelect(this.p, this.managmentObject, this.input, this.field, this.ruculaForm)
     }
 }

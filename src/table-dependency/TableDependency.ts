@@ -283,7 +283,6 @@ export class  TableDependency {
     }
     consistRegex(dependencyExpected:string,value:string|number){
 
-        debugger
         let regex = this.getValueInDependency(dependencyExpected)
 
         value = this.addValueDefault().typeString((value)) as string

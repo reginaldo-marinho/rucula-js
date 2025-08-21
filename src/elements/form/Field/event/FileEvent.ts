@@ -7,19 +7,20 @@ export abstract class FileEvent{
     protected input: HTMLInputElement|HTMLSelectElement|HTMLTextAreaElement
     protected field: field //? This property is used to support some events
     
-    
+    protected p:string
     protected ruculaForm
 
     protected managmentObject:ManagmentObject
-    constructor(managmentObject:ManagmentObject, input: HTMLInputElement|HTMLSelectElement|HTMLTextAreaElement,field: field,ruculaForm:HTMLElement) {
-
+    constructor(p:string, managmentObject:ManagmentObject, input: HTMLInputElement|HTMLSelectElement|HTMLTextAreaElement,field: field,ruculaForm:HTMLElement) {
+        this.p = p
         this.ruculaForm = ruculaForm
         this.managmentObject = managmentObject
         this.input = input
         this.field = field
         this.setEventListener()
     }
-
+    
+    
     dispatchEvent(prefixEvent:string){
 
         let identity = this.input.getAttribute("identity")!;
@@ -28,8 +29,9 @@ export abstract class FileEvent{
          
         let eventName = fragment.config.line ? `${prefixEvent}.${fragment.config.alias}.${fragment.config.propertDto}.${fragment.config.line}` : `${prefixEvent}.${fragment.config.alias}.${fragment.config.propertDto}`
         
-        let event = eventsCustom.field().get(eventName)
+        let event = eventsCustom.field().get(`${this.p}${eventName}`)
         
+
         this.ruculaForm?.dispatchEvent(event)
         
     }

@@ -21,6 +21,6 @@ export class FieldRadio extends FieldInput{
     }
 
     protected setEvents(): void {
-        new FileEventCommon(this.managmentObject, this.input, this.field,this.ruculaForm)
+        new FileEventCommon(this.p, this.managmentObject, this.input, this.field,this.ruculaForm)
     }
 }

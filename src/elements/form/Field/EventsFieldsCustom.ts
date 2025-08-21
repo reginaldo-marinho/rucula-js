@@ -30,11 +30,11 @@ export let eventsCustom = (() => {
             }
 
             return {
-                set:(identity:identity )=> {
+                set:(p:string,  identity:identity)=> {
 
-                    let beforeEventName = `${constPrefixEventField.BEFORE}.${identity.name}`
-                    let inputEventName = `${constPrefixEventField.INPUT}.${identity.name}`
-                    let afterEventName = `${constPrefixEventField.AFTER}.${identity.name}`
+                    let beforeEventName = `${p}${constPrefixEventField.BEFORE}.${identity.name}`
+                    let inputEventName = `${p}${constPrefixEventField.INPUT}.${identity.name}`
+                    let afterEventName = `${p}${constPrefixEventField.AFTER}.${identity.name}`
     
                     let id = {
                         identity: identity

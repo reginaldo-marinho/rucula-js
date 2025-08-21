@@ -10,6 +10,7 @@ import { FieldRadio } from "./Field/FieldRadio";
 import { FieldSelect } from "./Field/FieldSelect";
 import { FieldStrategy } from "./Field/FieldStrategy";
 import { FieldTextArea } from "./Field/FieldTextArea";
+import { FieldFile } from "./Field/FieldFile";
 
 
 export class Field  {
@@ -17,10 +18,12 @@ export class Field  {
     private managmentObject:ManagmentObject
 
     private ruculaForm:HTMLElement
+    private p:string
 
-    constructor(managmentObject:ManagmentObject, ruculaForm:HTMLElement) {
+    constructor(p:string , managmentObject:ManagmentObject, ruculaForm:HTMLElement) {
         this.managmentObject = managmentObject
         this.ruculaForm = ruculaForm
+        this.p = p
     }
     createSpanLabelIsRequerid(isRegex:boolean=false):HTMLSpanElement{
 
@@ -117,7 +120,8 @@ export class Field  {
             "textarea",
             "bool",
             "radio",
-            "password"
+            "password",
+            "file"
         ]
     
         if(types.indexOf(option) == -1){
@@ -153,23 +157,27 @@ export class Field  {
         this.checkTypeField(field.type)
         
         if(this.isSimple(field.type)){
-            fieldStrategy.setStrategy(new FieldCommon(field, this.managmentObject, this.ruculaForm))
+            fieldStrategy.setStrategy(new FieldCommon(this.p, field, this.managmentObject, this.ruculaForm))
         }
         
         if(this.isSelect(field.type)) {
-            fieldStrategy.setStrategy(new FieldSelect(field, this.managmentObject,  this.ruculaForm))
+            fieldStrategy.setStrategy(new FieldSelect(this.p, field, this.managmentObject,  this.ruculaForm))
         }
 
         if(isCheckBox()){
-            fieldStrategy.setStrategy(new FieldCheckbox(field, this.managmentObject, this.ruculaForm))
+            fieldStrategy.setStrategy(new FieldCheckbox(this.p, field, this.managmentObject, this.ruculaForm))
         }
 
         if(this.isTextArea(field.type)){
-            fieldStrategy.setStrategy(new FieldTextArea(field, this.managmentObject, this.ruculaForm))
+            fieldStrategy.setStrategy(new FieldTextArea(this.p, field, this.managmentObject, this.ruculaForm))
         }
         
         if(isRadio()) {
-            fieldStrategy.setStrategy(new FieldRadio(field, this.managmentObject,  this.ruculaForm))
+            fieldStrategy.setStrategy(new FieldRadio(this.p, field, this.managmentObject,  this.ruculaForm))
+        }
+        
+        if(isFile()) {
+            fieldStrategy.setStrategy(new FieldFile(this.p, field, this.managmentObject,  this.ruculaForm))
         }
 
         element = fieldStrategy.create();
@@ -188,13 +196,19 @@ export class Field  {
                 row:fragmentField.config.line
         }
 
-        eventsCustom.field().set(identity)
+        
+        eventsCustom.field().set(this.p, identity)
 
         this.managmentObject.setValueContextIdentity(field.identity,field.type, element.value);
         
         function isRadio(){
             return field.type[0]  == constTypeInput.RADIO
         }
+        
+        function isFile(){
+            return field.type  == constTypeInput.FILE
+        }
+
 
         function isCheckBox(){
             return field.type[0] == constTypeInput.CHECKBOX

@@ -6,16 +6,18 @@ import { ManagmentObject } from "../../../object/ObjectManagment";
 export abstract class FieldInput{
     
     protected managmentObject:ManagmentObject
+    protected p:string
     protected floatLabel = ruculaGlobal?.getConfigurationGlobal()?.floatLabel
 
     protected field:field
     public input!: HTMLInputElement|HTMLSelectElement|HTMLTextAreaElement
     protected ruculaForm:HTMLElement
 
-    constructor(field:field, managmentObject:ManagmentObject, ruculaForm:HTMLElement) {
+    constructor(p:string, field:field, managmentObject:ManagmentObject, ruculaForm:HTMLElement) {
         this.field = field;
         this.managmentObject = managmentObject
         this.ruculaForm = ruculaForm
+        this.p = p
     }
 
     protected abstract create():void;

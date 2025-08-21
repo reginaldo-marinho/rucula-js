@@ -19,7 +19,8 @@ export const constTypeInput = {
     CHECKBOX: "checkbox",
     TEXT_AREA: "textarea",
     RADIO: "radio",
-    PASS: "password"
+    PASS: "password",
+    FILE: "file",
 }
 
 export const constGroupFormat = {
