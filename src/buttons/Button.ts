@@ -80,12 +80,6 @@ export class  Button  {
         let description = baseEnvironments.querySelector('.description')!
         let icon = baseEnvironments.querySelector('i')!
         
-        let env = cookie.read('enviroment')
-        
-        if(env != "null" && env != null){
-            ruculaGlobal.setEnviroment(env)
-        }
-
         let atualEnvironment = ruculaGlobal.getEnvironment();
         
         setDescription(atualEnvironment)

@@ -1,3 +1,4 @@
+import { cookie } from "../common/coockie";
 import { enviroment } from "../entities/global/Enviroments";
 import { globalConfiguration } from "../entities/global/GlobalConfiguration";
 import { localization } from "../entities/global/Localization";
@@ -21,7 +22,7 @@ export let ruculaGlobal = (() => {
     }    
 
     return {
-
+        // TODO : Verificar localizacao desta chamada no rucula-js e remover, pois ela deve ser iniciada antes mesmo de instancias Rucula. Isso garante a remoção do mesmo no construtor rucula.
         initGlobalConfiguration: function (config:globalConfiguration){
             configuration = config;
             ruculaGlobal.setEnviroment();
@@ -69,6 +70,20 @@ export let ruculaGlobal = (() => {
         },
         
         getEnvironment:function (){
+
+            if (configuration.chosenEnvironment){
+                return configuration.chosenEnvironment
+            }
+
+            //TODO: corrigir nome errado enviroment -> environment 
+            
+            let env = cookie.read('enviroment')
+        
+            if(env != "null" && env != null){
+                ruculaGlobal.setEnviroment(env)
+            }else{
+                ruculaGlobal.setEnviroment();
+            }
             return configuration.chosenEnvironment;
         },
 
@@ -79,4 +94,9 @@ export let ruculaGlobal = (() => {
             return configuration;
         }
     }
-})()
+})();
+
+(window as any).ruculaGlobal = {
+    initGlobalConfiguration: ruculaGlobal.initGlobalConfiguration,
+    getEnvironment: ruculaGlobal.getEnvironment
+}
