@@ -4,6 +4,7 @@ import { frame } from "../../entities/form/frame";
 import { ManagmentObject } from "../../object/ObjectManagment";
 import { Field } from "../form/Field";
 import { FieldMenuContext } from "../form/Field/fieldMenuContext";
+import { setCssClass } from "../form/style";
 import { FrameEvent } from "./FrameEvent";
 
 export type typeInputSnapshot = {element:HTMLInputElement|HTMLSelectElement|HTMLTextAreaElement, value:any}
@@ -50,8 +51,8 @@ export class FrameElement{
         h3.classList.add('r-t-f')
         div.appendChild(h3)
     
-        if(frame?.style?.width) div.style.width = frame.style.width
-        if(frame?.style?.height) div.style.height = frame.style.height
+        setCssClass(frame.cssClass, div);
+       
         
         return div
     }

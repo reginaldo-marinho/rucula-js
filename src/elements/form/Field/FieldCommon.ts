@@ -31,7 +31,6 @@ export class FieldCommon extends FieldInput{
             input.type = "text";
         }
         input.value = String(this.field.value)
-        this.setWidth()
         input.classList.add("r-i-control")
         
         this.setEvents()

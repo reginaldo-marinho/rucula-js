@@ -13,7 +13,7 @@ export interface field {
     disable: boolean
     propertDto: string
     information?:string
-    width:number
+    groupWidth:string
     groupFormat?:string
     checkbox?:checkbox
     combo?:[],
@@ -22,6 +22,8 @@ export interface field {
     button?:button
     mask?:string
     regex?:string
+    cssClass?:string
+    file?:file
 }
 
 interface checkbox {
@@ -32,3 +34,11 @@ interface textarea {
     rows:number
     cols:number
 }
+
+interface file {
+    accept: string
+    multiple: boolean
+    maxSize: number
+    type: string
+}
+

@@ -248,10 +248,6 @@ input.r-i-control[identity][disabled] {
     display: flex;
     flex-wrap: wrap;
     padding-top: 10px;
-    width: 100%;
-    /* justify-content: flex-start;
-    align-content: flex-start;
-    align-items:end; */
 }
 
 .r-q-b .r-g-i-i {
@@ -1178,4 +1174,29 @@ input:-internal-autofill-selected {
     font-weight: bold;
     color: inherit;
     cursor: pointer;
+}
+
+.r-w-300 {
+    width: 300px;
+}
+.r-w-400 {
+    width: 400px;
+}
+.r-w-500 {
+    width: 500px;
+}
+
+.r-h-300 {
+    height: 300px;
+}
+.r-h-400 {
+    height: 400px;
+}
+.r-h-500 {
+    height: 500px;
+}
+
+.r-fixed-sticky{
+    position: sticky;
+    top: 0;
 }

@@ -9,8 +9,6 @@ export class FieldSelect extends FieldInput{
         
         this.input = select;
 
-        this.setWidth()
-
         if(this.floatLabel == true){
             this.input.classList.add('did-floating-select')
         }
