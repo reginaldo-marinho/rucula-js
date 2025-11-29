@@ -35,7 +35,7 @@ export class FileEventCheckBox extends FileEvent{
         })
 
         this.input.addEventListener('blur',(e) => {    
-
+            e.preventDefault()
             let element = e.target as HTMLInputElement
     
             let identity = element.getAttribute("identity") as string
