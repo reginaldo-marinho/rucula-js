@@ -21,6 +21,7 @@ export const constTypeInput = {
     RADIO: "radio",
     PASS: "password",
     FILE: "file",
+    IMAGE: "image"
 }
 
 export const constGroupFormat = {

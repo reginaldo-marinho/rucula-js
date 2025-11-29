@@ -2,16 +2,16 @@ import { field } from "../../../../entities/form/field";
 import { ManagmentObject } from "../../../../object/ObjectManagment";
 import { eventsCustom } from "../../Field/EventsFieldsCustom";
 
-export abstract class FileEvent{
+export abstract class FileEvent {
     
-    protected input: HTMLInputElement|HTMLSelectElement|HTMLTextAreaElement
+    protected input: HTMLInputElement|HTMLSelectElement|HTMLTextAreaElement| HTMLImageElement
     protected field: field //? This property is used to support some events
     
     protected p:string
     protected ruculaForm
 
     protected managmentObject:ManagmentObject
-    constructor(p:string, managmentObject:ManagmentObject, input: HTMLInputElement|HTMLSelectElement|HTMLTextAreaElement,field: field,ruculaForm:HTMLElement) {
+    constructor(p:string, managmentObject:ManagmentObject, input: HTMLInputElement|HTMLSelectElement|HTMLTextAreaElement| HTMLImageElement,field: field,ruculaForm:HTMLElement) {
         this.p = p
         this.ruculaForm = ruculaForm
         this.managmentObject = managmentObject
@@ -39,9 +39,8 @@ export abstract class FileEvent{
     protected abstract setEventListener():void;
     
     protected set(): void {
-
         let identity = this.input.getAttribute("identity")!
-
-        this.managmentObject.setValueContextIdentity(identity,this.field?.type, this.input.value)
+        let value = this.input instanceof HTMLImageElement ? this.input.src : this.input.value;
+        this.managmentObject.setValueContextIdentity(identity,this.field?.type, value)
     }
 }  

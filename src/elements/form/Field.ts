@@ -11,6 +11,7 @@ import { FieldSelect } from "./Field/FieldSelect";
 import { FieldStrategy } from "./Field/FieldStrategy";
 import { FieldTextArea } from "./Field/FieldTextArea";
 import { FieldFile } from "./Field/FieldFile";
+import { FieldImage } from "./Field/FieldImage";
 
 
 export class Field  {
@@ -52,7 +53,8 @@ export class Field  {
     
         const div = document.createElement('div');
         div.classList.add('r-g-i-i');
-    
+        div.style.width = field.groupWidth  
+
         const label = document.createElement('label');
     
         label.textContent = field.description
@@ -73,6 +75,7 @@ export class Field  {
             return div
         }
     
+
         if(field.groupFormat == undefined){
             label.classList.add('r-label-block')
             div.appendChild(label)
@@ -121,7 +124,8 @@ export class Field  {
             "bool",
             "radio",
             "password",
-            "file"
+            "file",
+            "image"
         ]
     
         if(types.indexOf(option) == -1){
@@ -151,7 +155,7 @@ export class Field  {
 
     create(field:field) {
 
-        let element:HTMLSelectElement|HTMLInputElement|HTMLTextAreaElement
+        let element:HTMLSelectElement|HTMLInputElement|HTMLTextAreaElement|HTMLImageElement
         let fieldStrategy:FieldStrategy = new FieldStrategy();
 
         this.checkTypeField(field.type)
@@ -180,6 +184,11 @@ export class Field  {
             fieldStrategy.setStrategy(new FieldFile(this.p, field, this.managmentObject,  this.ruculaForm))
         }
 
+        if(isImage()) {
+            fieldStrategy.setStrategy(new FieldImage(this.p, field, this.managmentObject,  this.ruculaForm))
+        }
+        
+
         element = fieldStrategy.create();
         
         if(field.maxLength){
@@ -199,8 +208,9 @@ export class Field  {
         
         eventsCustom.field().set(this.p, identity)
 
-        this.managmentObject.setValueContextIdentity(field.identity,field.type, element.value);
-        
+        let value = element instanceof HTMLImageElement ? element.src : element.value;
+        this.managmentObject.setValueContextIdentity(field.identity,field.type, value);
+
         function isRadio(){
             return field.type[0]  == constTypeInput.RADIO
         }
@@ -209,6 +219,9 @@ export class Field  {
             return field.type  == constTypeInput.FILE
         }
 
+        function isImage(){
+            return field.type  == constTypeInput.IMAGE
+        }
 
         function isCheckBox(){
             return field.type[0] == constTypeInput.CHECKBOX

@@ -274,17 +274,25 @@ export class Rucula{
         const ATTR_DISABLED = 'disabled'
         let identity = this.managmentObject.convertAliasToIdenty(targetPath);
 
-        let input = document.querySelector('[identity='+identity+']') as HTMLInputElement|HTMLSelectElement|HTMLTextAreaElement
+        let input = document.querySelector('[identity='+identity+']') as HTMLInputElement|HTMLSelectElement|HTMLTextAreaElement|HTMLImageElement
 
         let disabled = input.getAttribute(ATTR_DISABLED) == null ?  null : ATTR_DISABLED
 
         if(disabled){
             input.removeAttribute(ATTR_DISABLED)
         }
-        input.focus({preventScroll: true}) //! This command forces the objectmanagment and tableDependecy processes to run
-        let onChange = input.value != value && input.getAttribute('type') === 'checkbox'
-        input.value = value
         
+        
+        input.focus() //! This command forces the objectmanagment and tableDependecy processes to run
+        
+        let onChange = false
+
+        if( input instanceof HTMLImageElement){
+            input.src = value
+        }else{
+            onChange = input.value != value && input.getAttribute('type') === 'checkbox'
+            input.value = value
+        }
         input.blur() //! This command forces the objectmanagment and tableDependecy processes to run
         
         if(onChange){
@@ -302,6 +310,12 @@ export class Rucula{
     
     getValue (config:string):any {
         return this.managmentObject.getPropert(config)
+    }
+    
+    getElemet(targetPath:string) {
+        let identity = this.managmentObject.convertAliasToIdenty(targetPath);
+        let input = document.querySelector('[identity='+identity+']') as HTMLInputElement|HTMLSelectElement|HTMLTextAreaElement|HTMLImageElement
+        return input
     }
 
     p(text:string): string {
@@ -385,6 +399,7 @@ export class Rucula{
             }
         }
 }
+
 
     
 
