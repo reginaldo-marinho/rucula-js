@@ -7,10 +7,11 @@ export class FileEventCommon extends FileEvent{
    
     protected setEventListener(): void {
 
-        this.input.addEventListener('focus',() => {
-            
-            if(this.field.mask  && this.input.value){
-                this.input.value =  maskOutput(this.input.value,this.field.mask)
+        var input = this.input as HTMLInputElement;
+        
+        this.input.addEventListener('focus',(e) => {
+            if(this.field.mask  && input.value){
+                input.value =  maskOutput(input.value,this.field.mask)
             }
             
             this.dispatchEvent(constPrefixEventField.BEFORE);
@@ -29,8 +30,8 @@ export class FileEventCommon extends FileEvent{
         })
 
         this.input.addEventListener('blur',() => {            
-            if(this.field.mask  && this.input.value){
-                this.input.value = maskInput(this.input.value,this.field.mask)
+            if(this.field.mask  && input.value){
+                input.value = maskInput(input.value,this.field.mask)
             }
         })
     }
